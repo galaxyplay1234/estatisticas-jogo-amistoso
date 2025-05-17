@@ -5,83 +5,153 @@
   <title>Cadastro de Jogo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    /* (Mantém todo o estilo original que você já usa) */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
+      background: #eef1f5;
     }
     .container {
-      max-width: 500px;
+      max-width: 850px;
       margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     h1 {
       text-align: center;
+      color: #1a73e8;
+      font-size: 28px;
+      margin-bottom: 20px;
     }
     label {
       display: block;
       margin-top: 15px;
-      font-weight: bold;
+      font-weight: 600;
+      color: #333;
     }
     input, select, button {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
     }
-    .placar {
+    button {
+      background-color: #1a73e8;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #155cb1;
+    }
+    .teams {
       display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      gap: 20px;
-    }
-    .time {
-      width: 100%;
-      text-align: center;
-    }
-    .controle {
-      display: flex;
-      justify-content: center;
       gap: 10px;
-      margin-top: 10px;
-      align-items: center;
     }
     .players-list {
-      margin-top: 15px;
+      margin-top: 10px;
     }
     .players-list ul {
-      padding: 0;
       list-style: none;
+      padding: 0;
+      margin: 0;
     }
     .players-list li {
-      background: #eee;
-      padding: 6px 10px;
-      margin: 3px 0;
+      background: #f0f4f8;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 15px;
     }
     .players-list svg {
       width: 16px;
       height: 16px;
       cursor: pointer;
-      fill: #c00;
+      fill: #dc3545;
+    }
+    .placar {
+      display: flex;
+      justify-content: space-between;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+    .time {
+      flex: 1;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .controle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .controle button {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      border-radius: 50%;
+      padding: 0;
+    }
+    .controle span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
+    }
+    .gol-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .timeline {
-      margin-top: 20px;
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
     }
     .timeline p {
-      background: #f0f0f0;
-      padding: 8px;
-      border-radius: 4px;
-      margin-bottom: 5px;
+      margin: 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
     }
     .assistencia {
       font-size: 0.9em;
-      color: #555;
+      color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
+    }
+    @media (max-width: 600px) {
+      .teams {
+        flex-direction: column;
+      }
+      .placar {
+        flex-direction: column;
+        align-items: center;
+      }
+      .controle {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -139,33 +209,43 @@
     </div>
   </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyDOeP0-qZRiOAxzVKW2p_4vAS1yM-Ky-V0",
-      authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
-      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
-      projectId: "estatistica-jogo-amistoso",
-      storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "304970060599",
-      appId: "1:304970060599:web:110fae6bfcf4cb3c7cc85e"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const ref = db.ref("jogo");
+    apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
+    authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
+    databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
+    projectId: "estatistica-jogo-amistoso",
+    storageBucket: "estatistica-jogo-amistoso.appspot.com",
+    messagingSenderId: "719635751250",
+    appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const ref = db.ref("jogoAmistoso");
 
     let jogadores = [];
     let golsMeuTime = 0;
     let golsAdversario = 0;
     let jogadas = [];
 
+    function syncFirebase() {
+      ref.set({
+        meuTime: document.getElementById("meuTime").value,
+        adversario: document.getElementById("adversario").value,
+        jogadores,
+        golsMeuTime,
+        golsAdversario,
+        jogadas
+      });
+    }
+
     function atualizarNomes() {
       document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
       document.getElementById("adversarioNome").innerText = document.getElementById("adversario").value || "Adversário";
-      salvar();
+      syncFirebase();
     }
 
     document.getElementById("meuTime").addEventListener("input", atualizarNomes);
@@ -173,13 +253,11 @@
 
     function adicionarJogador() {
       const nome = document.getElementById("jogadorNome").value.trim();
-      if (nome && !jogadores.includes(nome)) {
-        jogadores.push(nome);
-        jogadores.sort();
-        atualizarListaJogadores();
-        salvar();
-      }
+      if (!nome || jogadores.includes(nome)) return;
+      jogadores.push(nome);
       document.getElementById("jogadorNome").value = "";
+      atualizarListaJogadores();
+      syncFirebase();
     }
 
     function removerJogador(nome) {
@@ -187,10 +265,11 @@
       jogadas = jogadas.filter(j => j.autor !== nome && j.assistencia !== nome);
       atualizarListaJogadores();
       atualizarLinhaTempo();
-      salvar();
+      syncFirebase();
     }
 
     function atualizarListaJogadores() {
+      jogadores.sort((a, b) => a.localeCompare(b));
       const ul = document.getElementById("listaJogadores");
       const autorSel = document.getElementById("autorGol");
       const assistSel = document.getElementById("assistenciaGol");
@@ -199,13 +278,14 @@
       autorSel.innerHTML = "";
       assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
-      jogadores.forEach(j => {
-        ul.innerHTML += `<li>${j}
-          <svg onclick="removerJogador('${j}')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      jogadores.forEach(nome => {
+        ul.innerHTML += `<li>${nome}
+          <svg onclick="removerJogador('${nome}')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M18.36 6.64a1 1 0 0 0-1.41 0L12 11.59 7.05 6.64A1 1 0 0 0 5.64 8.05L10.59 13l-4.95 4.95a1 1 0 1 0 1.41 1.41L12 14.41l4.95 4.95a1 1 0 0 0 1.41-1.41L13.41 13l4.95-4.95a1 1 0 0 0 0-1.41z"/>
-          </svg></li>`;
-        autorSel.innerHTML += `<option value="${j}">${j}</option>`;
-        assistSel.innerHTML += `<option value="${j}">${j}</option>`;
+          </svg>
+        </li>`;
+        autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
+        assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
       });
     }
 
@@ -220,9 +300,9 @@
         golsMeuTime--;
         jogadas.pop();
       }
-      document.getElementById("golsMeuTime").innerText = golsMeuTime;
+      atualizarPlacar();
       atualizarLinhaTempo();
-      salvar();
+      syncFirebase();
     }
 
     function mudarGolAdv(valor) {
@@ -231,32 +311,25 @@
       } else if (valor === -1 && golsAdversario > 0) {
         golsAdversario--;
       }
+      atualizarPlacar();
+      syncFirebase();
+    }
+
+    function atualizarPlacar() {
+      document.getElementById("golsMeuTime").innerText = golsMeuTime;
       document.getElementById("golsAdversario").innerText = golsAdversario;
-      salvar();
     }
 
     function atualizarLinhaTempo() {
       const linha = document.getElementById("linhaTempo");
       linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      jogadas.slice().reverse().forEach(j => {
+      [...jogadas].reverse().forEach(j => {
         linha.innerHTML += `
           <p>
             ⚽ ${j.autor}<br />
             ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
           </p>`;
       });
-    }
-
-    function salvar() {
-      const data = {
-        meuTime: document.getElementById("meuTime").value,
-        adversario: document.getElementById("adversario").value,
-        jogadores,
-        golsMeuTime,
-        golsAdversario,
-        jogadas
-      };
-      ref.set(data);
     }
   </script>
 </body>
