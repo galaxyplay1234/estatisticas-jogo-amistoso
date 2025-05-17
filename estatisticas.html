@@ -1,1 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Estatísticas do Jogo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f3f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #007bff;
+    }
+    .teams {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2em;
+      margin: 20px 0;
+      padding: 10px;
+      background: #e9ecef;
+      border-radius: 8px;
+    }
+    .section {
+      margin-top: 25px;
+    }
+    .player {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .player:last-child {
+      border-bottom: none;
+    }
+    .badge {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      margin-left: 8px;
+    }
+    .no-data {
+      text-align: center;
+      color: #777;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
 
+<div class="container" id="conteudo">
+  <h1>Estatísticas do Jogo</h1>
+</div>
+
+<script>
+  const conteudo = document.getElementById('conteudo');
+  const dados = JSON.parse(localStorage.getItem('dadosJogo'));
+
+  if (!dados) {
+    conteudo.innerHTML = '<p class="no-data">Nenhum dado encontrado. Volte para a página de cadastro.</p>';
+  } else {
+    const { meuTime, adversario, golsAdversario, jogadores } = dados;
+
+    const headerHTML = `
+      <div class="teams">
+        <div><strong>${meuTime}</strong></div>
+        <div><strong>${adversario}</strong> (${golsAdversario} gol${golsAdversario !== 1 ? 's' : ''})</div>
+      </div>
+    `;
+
+    let jogadoresHTML = '';
+    if (jogadores.length === 0) {
+      jogadoresHTML = '<p class="no-data">Nenhum jogador cadastrado.</p>';
+    } else {
+      jogadoresHTML = jogadores.map(jogador => {
+        let tags = '';
+        if (jogador.gols) tags += `<span class="badge">Gol</span>`;
+        if (jogador.assistencias) tags += `<span class="badge">Assistência</span>`;
+        return `<div class="player"><strong>${jogador.nome}</strong> ${tags}</div>`;
+      }).join('');
+    }
+
+    conteudo.innerHTML += `
+      ${headerHTML}
+      <div class="section">
+        <h2>Jogadores (${meuTime})</h2>
+        ${jogadoresHTML}
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>
