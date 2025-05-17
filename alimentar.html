@@ -1,183 +1,197 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Alimentar Estatísticas</title>
+  <meta charset="UTF-8" />
+  <title>Cadastrar Estatísticas</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      background: #f4f7f9;
       margin: 0;
       padding: 20px;
       color: #333;
     }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
     h1 {
       text-align: center;
       color: #007bff;
     }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
     }
+
     label {
+      font-weight: bold;
       display: block;
       margin-top: 10px;
-      font-weight: bold;
     }
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .player-list {
-      margin-top: 15px;
-    }
-    .player-item {
-      background: #e9ecef;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 8px;
+
+    .checkbox-group {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 20px;
+      margin-top: 10px;
     }
-    .player-item input[type="checkbox"] {
-      margin-left: 10px;
+
+    .checkbox-group label {
+      font-weight: normal;
     }
+
+    .jogador {
+      background: #f1f3f5;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
     .btn {
-      display: inline-block;
-      padding: 10px 16px;
-      margin-top: 15px;
-      margin-right: 10px;
-      background-color: #007bff;
+      background: #007bff;
       color: white;
       border: none;
-      border-radius: 4px;
       cursor: pointer;
+      font-weight: bold;
     }
+
     .btn:hover {
-      background-color: #0056b3;
+      background: #0056b3;
     }
-    .actions {
+
+    #sucesso {
+      color: green;
+      font-weight: bold;
       text-align: center;
+      display: none;
+      margin-top: 10px;
+    }
+
+    .link-estatisticas {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .link-estatisticas a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Cadastro de Estatísticas</h1>
 
-<div class="container">
-  <h1>Cadastro de Estatísticas</h1>
+    <label>Nome do seu time:</label>
+    <input type="text" id="meuTime" placeholder="Ex: Real Amistoso" />
 
-  <label>Seu Time</label>
-  <input type="text" id="meuTime" placeholder="Digite o nome do seu time">
+    <label>Nome do time adversário:</label>
+    <input type="text" id="adversario" placeholder="Ex: Amigos FC" />
 
-  <label>Time Adversário</label>
-  <input type="text" id="adversario" placeholder="Digite o nome do adversário">
+    <label>Gols do time adversário:</label>
+    <input type="number" id="golsAdversario" min="0" />
 
-  <label>Gols do Adversário</label>
-  <input type="number" id="golsAdversario" min="0" value="0">
+    <hr />
 
-  <hr>
+    <h2>Jogadores do seu time</h2>
 
-  <label>Nome do Jogador</label>
-  <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador">
-  <button class="btn" onclick="adicionarJogador()">Adicionar Jogador</button>
+    <label>Nome do jogador:</label>
+    <input type="text" id="nomeJogador" placeholder="Ex: João Silva" />
 
-  <div class="player-list" id="listaJogadores">
-    <!-- Jogadores vão aparecer aqui -->
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="fezGol" /> Gol</label>
+      <label><input type="checkbox" id="fezAssistencia" /> Assistência</label>
+    </div>
+
+    <button class="btn" onclick="adicionarJogador()">Adicionar Jogador</button>
+
+    <div id="listaJogadores"></div>
+
+    <hr />
+
+    <button class="btn" onclick="salvarDados()">Salvar Estatísticas</button>
+    <p id="sucesso">✅ Dados salvos com sucesso!</p>
+
+    <div class="link-estatisticas">
+      <a href="estatisticas.html">→ Ver estatísticas do jogo</a>
+    </div>
   </div>
 
-  <div class="actions">
-    <button class="btn" onclick="salvarDados()">Salvar</button>
-    <button class="btn" onclick="limparDados()">Limpar</button>
-    <button class="btn" onclick="verEstatisticas()">Ver Estatísticas</button>
-  </div>
-</div>
+  <script>
+    const jogadores = [];
 
-<script>
-  let jogadores = [];
+    function adicionarJogador() {
+      const nome = document.getElementById('nomeJogador').value.trim();
+      const fezGol = document.getElementById('fezGol').checked;
+      const fezAssistencia = document.getElementById('fezAssistencia').checked;
 
-  function adicionarJogador() {
-    const nome = document.getElementById('nomeJogador').value.trim();
-    if (!nome) return;
+      if (!nome) {
+        alert('Digite o nome do jogador');
+        return;
+      }
 
-    const id = Date.now();
+      jogadores.push({
+        nome: nome,
+        gols: fezGol,
+        assistencias: fezAssistencia
+      });
 
-    jogadores.push({ id, nome, gols: false, assistencias: false });
-    document.getElementById('nomeJogador').value = '';
-    renderJogadores();
-  }
+      document.getElementById('nomeJogador').value = '';
+      document.getElementById('fezGol').checked = false;
+      document.getElementById('fezAssistencia').checked = false;
 
-  function renderJogadores() {
-    const lista = document.getElementById('listaJogadores');
-    lista.innerHTML = '';
-    jogadores.forEach(jogador => {
-      const div = document.createElement('div');
-      div.className = 'player-item';
-      div.innerHTML = `
-        ${jogador.nome}
-        <span>
-          <label><input type="checkbox" onchange="toggleGol(${jogador.id})" ${jogador.gols ? 'checked' : ''}> Gol</label>
-          <label><input type="checkbox" onchange="toggleAssistencia(${jogador.id})" ${jogador.assistencias ? 'checked' : ''}> Assistência</label>
-        </span>
-      `;
-      lista.appendChild(div);
-    });
-  }
-
-  function toggleGol(id) {
-    const jogador = jogadores.find(j => j.id === id);
-    jogador.gols = !jogador.gols;
-  }
-
-  function toggleAssistencia(id) {
-    const jogador = jogadores.find(j => j.id === id);
-    jogador.assistencias = !jogador.assistencias;
-  }
-
-  function salvarDados() {
-    const meuTime = document.getElementById('meuTime').value.trim();
-    const adversario = document.getElementById('adversario').value.trim();
-    const golsAdversario = parseInt(document.getElementById('golsAdversario').value);
-
-    if (!meuTime || !adversario) {
-      alert('Preencha o nome dos times.');
-      return;
+      atualizarLista();
     }
 
-    const dados = {
-      meuTime,
-      adversario,
-      golsAdversario,
-      jogadores
-    };
+    function atualizarLista() {
+      const lista = document.getElementById('listaJogadores');
+      lista.innerHTML = '';
 
-    localStorage.setItem('dadosJogo', JSON.stringify(dados));
-    alert('Dados salvos com sucesso!');
-  }
-
-  function limparDados() {
-    if (confirm('Deseja realmente limpar os dados?')) {
-      jogadores = [];
-      document.getElementById('meuTime').value = '';
-      document.getElementById('adversario').value = '';
-      document.getElementById('golsAdversario').value = 0;
-      renderJogadores();
-      localStorage.removeItem('dadosJogo');
+      jogadores.forEach((j, i) => {
+        let texto = `<strong>${j.nome}</strong>`;
+        if (j.gols) texto += ' ⚽';
+        if (j.assistencias) texto += ' 🎯';
+        lista.innerHTML += `<div class="jogador">${texto}</div>`;
+      });
     }
-  }
 
-  function verEstatisticas() {
-    alert('Aqui redirecionaria para a página principal (ainda vamos criar).');
-    // window.location.href = 'estatisticas.html';
-  }
-</script>
+    function salvarDados() {
+      const meuTime = document.getElementById('meuTime').value.trim();
+      const adversario = document.getElementById('adversario').value.trim();
+      const golsAdversario = parseInt(document.getElementById('golsAdversario').value) || 0;
 
+      if (!meuTime || !adversario) {
+        alert('Preencha os nomes dos times');
+        return;
+      }
+
+      const dados = {
+        meuTime,
+        adversario,
+        golsAdversario,
+        jogadores
+      };
+
+      localStorage.setItem('dadosJogo', JSON.stringify(dados));
+      document.getElementById('sucesso').style.display = 'block';
+
+      setTimeout(() => {
+        document.getElementById('sucesso').style.display = 'none';
+      }, 3000);
+    }
+  </script>
 </body>
 </html>
