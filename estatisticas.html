@@ -107,8 +107,8 @@
       const data = snapshot.val();
       if (!data) return;
 
-      const timeA = data.meuTime || "Time A";
-      const timeB = data.adversario || "Time B";
+      const timeA = data.meuTime || "Meu Time";
+      const timeB = data.adversario || "Adversário";
       const golsA = data.golsMeuTime || 0;
       const golsB = data.golsAdversario || 0;
       const jogadas = data.jogadas || [];
