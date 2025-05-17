@@ -19,7 +19,7 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      margin-top: 150px; /* pra não ficar atrás do placar fixo */
+      margin-top: 150px; /* espaço para o placar fixo */
     }
 
     h1 {
@@ -29,7 +29,7 @@
       margin-bottom: 20px;
     }
 
-    /* Placar fixo e centralizado */
+    /* Placar fixo e centralizado com nomes dos lados */
     .placar {
       position: fixed;
       top: 50%;
@@ -42,25 +42,38 @@
       color: #1a73e8;
       font-weight: 700;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      gap: 40px;
+
+      display: grid;
+      grid-template-columns: max-content auto max-content;
       align-items: center;
+      column-gap: 40px;
       max-width: 90vw;
-      text-align: center;
       user-select: none;
       z-index: 1000;
     }
 
     .time {
-      white-space: normal; /* permite quebra natural */
-      max-width: 140px; /* limite para forçar quebra em nomes longos */
+      max-width: 140px; /* limite largura para quebrar */
+      word-wrap: break-word;
+      white-space: normal; /* permite quebra */
       font-size: 20px;
       line-height: 1.2;
     }
 
+    /* Alinhar o nome do time da esquerda à esquerda */
+    #timeA {
+      text-align: left;
+    }
+
+    /* Alinhar o nome do time da direita à direita */
+    #timeB {
+      text-align: right;
+    }
+
     .placar-central {
       font-size: 28px;
-      white-space: nowrap; /* placar não quebra */
+      white-space: nowrap; /* não quebra o placar */
+      text-align: center;
     }
 
     .timeline {
@@ -92,11 +105,19 @@
 
     @media (max-width: 600px) {
       .placar {
-        flex-direction: column;
-        gap: 10px;
+        grid-template-columns: 1fr;
+        padding: 15px 20px;
+        row-gap: 12px;
+        text-align: center;
       }
-      .time {
+
+      #timeA, #timeB {
         max-width: 100%;
+        text-align: center !important;
+      }
+
+      .placar-central {
+        font-size: 26px;
       }
     }
   </style>
