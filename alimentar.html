@@ -1,4 +1,3 @@
-<!-- alimentar.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,66 +5,325 @@
   <title>Cadastro de Jogo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    /* (Mantido o design já aprovado aqui — mesmo estilo anterior) */
-    /* ... [estilos omitidos por brevidade, são os mesmos do código aprovado] ... */
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .players-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+    }
+
+    .players-list li {
+      background: #eee;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .players-list svg {
+      width: 18px;
+      height: 18px;
+      fill: #c00;
+      cursor: pointer;
+    }
+
+    .placar {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .time {
+      width: 48%;
+      text-align: center;
+    }
+
+    .time span {
+      display: block;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .controle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .controle button {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+      padding: 0;
+    }
+
+    .gol-form {
+      margin-top: 20px;
+    }
+
+    .timeline {
+      margin-top: 30px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .timeline p {
+      background: #e3f2fd;
+      padding: 8px;
+      border-radius: 4px;
+      margin: 5px 0;
+    }
+
+    .assistencia {
+      font-size: 0.9em;
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Cadastro de Amistoso</h1>
-    <!-- campos de time, jogadores, placar, gol, linha do tempo (como aprovado) -->
-    <!-- ... (código HTML igual ao aprovado) ... -->
+    <h1>Cadastro de Jogo</h1>
+
+    <label for="timeA">Nome do Seu Time:</label>
+    <input type="text" id="timeA" placeholder="Ex: Flamengo" />
+
+    <label for="timeB">Nome do Adversário:</label>
+    <input type="text" id="timeB" placeholder="Ex: Vasco" />
+
+    <label for="jogadores">Jogadores do Seu Time:</label>
+    <input type="text" id="jogador" placeholder="Digite o nome e pressione Enter" />
+    <div class="players-list">
+      <ul id="lista-jogadores"></ul>
+    </div>
+
+    <div class="placar">
+      <div class="time">
+        <span id="nomeTimeA">Time A</span>
+        <div class="controle">
+          <button onclick="alterarGol('A', -1)">-</button>
+          <span id="golsA">0</span>
+          <button onclick="alterarGol('A', 1)">+</button>
+        </div>
+      </div>
+      <div class="time">
+        <span id="nomeTimeB">Time B</span>
+        <div class="controle">
+          <button onclick="alterarGol('B', -1)">-</button>
+          <span id="golsB">0</span>
+          <button onclick="alterarGol('B', 1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="gol-form" id="formGol" style="display:none;">
+      <label for="autor">Autor do Gol:</label>
+      <select id="autor"></select>
+      <label for="assistencia">Assistência:</label>
+      <select id="assistencia">
+        <option value="">Sem assistência</option>
+      </select>
+    </div>
+
+    <div class="timeline">
+      <strong>Estatísticas do Jogo:</strong>
+      <div id="linhaTempo"></div>
+    </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAYrK0qnKo4efc9Z07tCdY_gf9-ez3_G5U",
+      apiKey: "AIzaSyAPl07E20-ROibk9ps5bmxOglGV3BNfbPo",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "884271676766",
-      appId: "1:884271676766:web:c26596d7667483441463cf",
-      measurementId: "G-PPJTF8B1CM",
+      messagingSenderId: "929137267944",
+      appId: "1:929137267944:web:04110e9485409dbd73389c",
       databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com/"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
+    const jogadorInput = document.getElementById('jogador');
+    const listaJogadores = document.getElementById('lista-jogadores');
+    const selectAutor = document.getElementById('autor');
+    const selectAssistencia = document.getElementById('assistencia');
+    const linhaTempo = document.getElementById('linhaTempo');
     let jogadores = [];
-    let golsMeuTime = 0;
-    let golsAdversario = 0;
-    let jogadas = [];
+    let golsA = 0;
+    let golsB = 0;
 
-    // ... funções manter (adicionarJogador, atualizarLista, mudarGol, etc.) ...
+    jogadorInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter' && jogadorInput.value.trim()) {
+        const nome = jogadorInput.value.trim();
+        jogadores.push(nome);
+        atualizarJogadores();
+        jogadorInput.value = '';
+        enviarDados();
+      }
+    });
 
-    function syncFirebase() {
-      const data = {
-        meuTime: document.getElementById("meuTime").value,
-        adversario: document.getElementById("adversario").value,
-        jogadores,
-        golsMeuTime,
-        golsAdversario,
-        jogadas,
-      };
-      set(ref(db, "jogo"), data);
+    function atualizarJogadores() {
+      jogadores.sort((a, b) => a.localeCompare(b));
+      listaJogadores.innerHTML = '';
+      selectAutor.innerHTML = '';
+      selectAssistencia.innerHTML = '<option value="">Sem assistência</option>';
+      jogadores.forEach(nome => {
+        const li = document.createElement('li');
+        li.innerHTML = `${nome} <svg onclick="removerJogador('${nome}')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>`;
+        listaJogadores.appendChild(li);
+
+        const opt1 = document.createElement('option');
+        opt1.value = nome;
+        opt1.textContent = nome;
+        selectAutor.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = nome;
+        opt2.textContent = nome;
+        selectAssistencia.appendChild(opt2);
+      });
     }
 
-    // Após ações relevantes, chamar:
-    // syncFirebase(); (dentro de mudarGol, mudarGolAdv, adicionar/remover jogador, etc.)
+    function removerJogador(nome) {
+      jogadores = jogadores.filter(j => j !== nome);
+      atualizarJogadores();
+      enviarDados();
+    }
 
-    // Exemplo de inserção nas funções:
-    // Ex: após atualizarListaJogadores():
-    //    atualizarListaJogadores(); syncFirebase();
+    function alterarGol(time, valor) {
+      if (time === 'A') {
+        if (valor > 0) {
+          document.getElementById('formGol').style.display = 'block';
+          document.getElementById('formGol').scrollIntoView({ behavior: 'smooth' });
+          document.getElementById('formGol').onsubmit = e => e.preventDefault();
+          document.getElementById('formGol').querySelector('button')?.remove();
+          const btn = document.createElement('button');
+          btn.textContent = 'Confirmar Gol';
+          btn.onclick = () => {
+            const autor = selectAutor.value;
+            const assist = selectAssistencia.value;
+            if (!autor) return alert('Selecione o autor do gol!');
+            const txt = assist ? `${autor} (Assist: ${assist})` : autor;
+            const p = document.createElement('p');
+            p.textContent = `${golsA + 1} - ${golsB} | ${txt}`;
+            linhaTempo.appendChild(p);
+            golsA++;
+            document.getElementById('golsA').textContent = golsA;
+            document.getElementById('formGol').style.display = 'none';
+            enviarDados();
+          };
+          document.getElementById('formGol').appendChild(btn);
+        } else if (golsA > 0) {
+          golsA--;
+          document.getElementById('golsA').textContent = golsA;
+          linhaTempo.removeChild(linhaTempo.lastChild);
+          enviarDados();
+        }
+      } else {
+        if (valor > 0) {
+          golsB++;
+          document.getElementById('golsB').textContent = golsB;
+          const p = document.createElement('p');
+          p.textContent = `${golsA} - ${golsB} | Gol do ${document.getElementById('timeB').value}`;
+          linhaTempo.appendChild(p);
+          enviarDados();
+        } else if (golsB > 0) {
+          golsB--;
+          document.getElementById('golsB').textContent = golsB;
+          linhaTempo.removeChild(linhaTempo.lastChild);
+          enviarDados();
+        }
+      }
+    }
 
-    // Ex: após mudarGol():
-    //    jogadas.push({ autor, assistencia: assist || null }); syncFirebase();
+    function enviarDados() {
+      const dados = {
+        timeA: document.getElementById('timeA').value,
+        timeB: document.getElementById('timeB').value,
+        jogadores,
+        golsA,
+        golsB,
+        estatisticas: Array.from(linhaTempo.children).map(p => p.textContent)
+      };
+      db.ref("jogoAtual").set(dados);
+    }
 
-    // Faça isso em todos os lugares onde o estado muda.
+    // Atualiza os nomes nos placares dinamicamente
+    document.getElementById('timeA').addEventListener('input', e => {
+      document.getElementById('nomeTimeA').textContent = e.target.value || 'Time A';
+      enviarDados();
+    });
+
+    document.getElementById('timeB').addEventListener('input', e => {
+      document.getElementById('nomeTimeB').textContent = e.target.value || 'Time B';
+      enviarDados();
+    });
   </script>
 </body>
 </html>
