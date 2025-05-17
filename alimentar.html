@@ -2,128 +2,250 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro do Jogo</title>
+  <title>Cadastro de Jogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #f4f4f4;
+      background: #eef1f5;
     }
-    h2 {
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
       text-align: center;
+      color: #1a73e8;
+      font-size: 28px;
       margin-bottom: 20px;
     }
+
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
     }
+
     input, select, button {
-      padding: 8px;
-      margin-top: 5px;
       width: 100%;
-      max-width: 400px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
     }
-    .btn-group {
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #155cb1;
+    }
+
+    .teams {
       display: flex;
       gap: 10px;
+    }
+
+    .players-list {
       margin-top: 10px;
     }
-    .btn-group button {
-      flex: 1;
-    }
-    #jogadoresList li {
+
+    .players-list ul {
       list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .players-list li {
+      background: #f0f4f8;
+      padding: 8px 12px;
       margin: 5px 0;
-      background-color: #ddd;
-      padding: 5px 10px;
-      border-radius: 5px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 15px;
     }
-    .linha-tempo {
-      margin-top: 30px;
-      padding: 15px;
-      background-color: #fff;
-      border-radius: 10px;
-    }
-    .linha-tempo p {
-      margin: 5px 0;
-    }
-    .assistencia {
-      font-style: italic;
-      color: gray;
-    }
-    .btn-remover-jogada {
-      margin-left: 10px;
+
+    .players-list svg {
+      width: 16px;
+      height: 16px;
       cursor: pointer;
-      fill: #c00;
-      width: 18px;
-      height: 18px;
-      vertical-align: middle;
+      fill: #dc3545;
+    }
+
+    .placar {
+      display: flex;
+      justify-content: space-between;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .time {
+      flex: 1;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .controle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .controle button {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      border-radius: 50%;
+      padding: 0;
+    }
+
+    .controle span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .gol-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .timeline {
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .timeline p {
+      margin: 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    .assistencia {
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .teams {
+        flex-direction: column;
+      }
+
+      .placar {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .controle {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Cadastro do Jogo</h2>
+  <div class="container">
+    <h1>Cadastro de Amistoso</h1>
 
-  <label for="meuTime">Nome do Seu Time:</label>
-  <input type="text" id="meuTime" placeholder="Digite o nome do seu time"/>
+    <label>Seu Time:</label>
+    <input type="text" id="meuTime" placeholder="Nome do seu time" />
 
-  <label for="adversario">Nome do Adversário:</label>
-  <input type="text" id="adversario" placeholder="Digite o nome do adversário"/>
+    <label>Time Adversário:</label>
+    <input type="text" id="adversario" placeholder="Nome do time adversário" />
 
-  <label for="jogador">Adicionar Jogador:</label>
-  <div class="btn-group">
-    <input type="text" id="jogador" placeholder="Nome do jogador"/>
-    <button onclick="adicionarJogador()">Adicionar</button>
+    <label>Adicionar Jogador ao Seu Time:</label>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="jogadorNome" placeholder="Nome do jogador" />
+      <button onclick="adicionarJogador()">Adicionar</button>
+    </div>
+
+    <div class="players-list">
+      <ul id="listaJogadores"></ul>
+    </div>
+
+    <div class="placar">
+      <div class="time">
+        <span id="meuTimeNome">Meu Time</span>
+        <div class="controle">
+          <button onclick="mudarGol(1)">+</button>
+          <span id="golsMeuTime">0</span>
+          <button onclick="mudarGol(-1)">-</button>
+        </div>
+      </div>
+      <div class="time">
+        <span id="adversarioNome">Adversário</span>
+        <div class="controle">
+          <button onclick="mudarGolAdv(1)">+</button>
+          <span id="golsAdversario">0</span>
+          <button onclick="mudarGolAdv(-1)">-</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="gol-form">
+      <label>Autor do Gol:</label>
+      <select id="autorGol"></select>
+
+      <label>Assistência:</label>
+      <select id="assistenciaGol">
+        <option value="">Sem assistência</option>
+      </select>
+    </div>
+
+    <div class="timeline" id="linhaTempo">
+      <strong>Estatísticas do Jogo:</strong>
+    </div>
   </div>
 
-  <ul id="jogadoresList"></ul>
-
-  <label>Gols do Seu Time:</label>
-  <div class="btn-group">
-    <button onclick="mudarGol(-1)">-</button>
-    <div id="golsMeuTime">0</div>
-    <button onclick="mudarGol(1)">+</button>
-  </div>
-
-  <label>Gols do Adversário:</label>
-  <div class="btn-group">
-    <button onclick="mudarGolAdv(-1)">-</button>
-    <div id="golsAdversario">0</div>
-    <button onclick="mudarGolAdv(1)">+</button>
-  </div>
-
-  <label for="autorGol">Autor do Gol:</label>
-  <select id="autorGol">
-    <option value="">Selecione</option>
-  </select>
-
-  <label for="assistenciaGol">Assistência:</label>
-  <select id="assistenciaGol">
-    <option value="">Sem assistência</option>
-  </select>
-
-  <button onclick="adicionarGol()">Registrar Gol</button>
-
-  <div id="linhaTempo" class="linha-tempo">
-    <strong>Estatísticas do Jogo:</strong>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyDYHFZ2uVcjc2q3Ko50rXBqWrMu1vA5cHc",
+      apiKey: "AIzaSyCOgSuTtPNTLMTTxiYV5zi9Y9Z7mF10cQE",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
       databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "322739215661",
-      appId: "1:322739215661:web:f53c040ba2337220a59f7c"
+      messagingSenderId: "819633836782",
+      appId: "1:819633836782:web:b0e038e67d36b0bc7c2652"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -134,104 +256,107 @@
     let golsAdversario = 0;
     let jogadas = [];
 
+    function atualizarNomes() {
+      document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
+      document.getElementById("adversarioNome").innerText = document.getElementById("adversario").value || "Adversário";
+      salvarFirebase();
+    }
+
+    document.getElementById("meuTime").addEventListener("input", atualizarNomes);
+    document.getElementById("adversario").addEventListener("input", atualizarNomes);
+
     function adicionarJogador() {
-      const nome = document.getElementById("jogador").value.trim();
-      if (!nome) return;
-      if (jogadores.includes(nome)) return alert("Jogador já adicionado.");
+      const nome = document.getElementById("jogadorNome").value.trim();
+      if (!nome || jogadores.includes(nome)) return;
       jogadores.push(nome);
-      jogadores.sort();
-      document.getElementById("jogador").value = "";
+      document.getElementById("jogadorNome").value = "";
       atualizarListaJogadores();
-      enviarEstadoFirebase();
+      salvarFirebase();
+    }
+
+    function removerJogador(nome) {
+      jogadores = jogadores.filter(j => j !== nome);
+      jogadas = jogadas.filter(j => j.autor !== nome && j.assistencia !== nome);
+      atualizarListaJogadores();
+      atualizarLinhaTempo();
+      salvarFirebase();
     }
 
     function atualizarListaJogadores() {
-      const ul = document.getElementById("jogadoresList");
+      jogadores.sort((a, b) => a.localeCompare(b));
+      const ul = document.getElementById("listaJogadores");
       const autorSel = document.getElementById("autorGol");
       const assistSel = document.getElementById("assistenciaGol");
+
       ul.innerHTML = "";
-      autorSel.innerHTML = '<option value="">Selecione</option>';
+      autorSel.innerHTML = "";
       assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
-      jogadores.forEach((nome) => {
-        ul.innerHTML += `
-          <li>
-            ${nome}
-            <svg onclick="removerJogador('${nome}')" class="btn-remover-jogada" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M18.36 6.64a1 1 0 0 0-1.41 0L12 11.59 7.05 6.64A1 1 0 0 0 5.64 8.05L10.59 13l-4.95 4.95a1 1 0 1 0 1.41 1.41L12 14.41l4.95 4.95a1 1 0 0 0 1.41-1.41L13.41 13l4.95-4.95a1 1 0 0 0 0-1.41z"/>
-            </svg>
-          </li>`;
+      jogadores.forEach(nome => {
+        ul.innerHTML += `<li>${nome}
+          <svg onclick="removerJogador('${nome}')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M18.36 6.64a1 1 0 0 0-1.41 0L12 11.59 7.05 6.64A1 1 0 0 0 5.64 8.05L10.59 13l-4.95 4.95a1 1 0 1 0 1.41 1.41L12 14.41l4.95 4.95a1 1 0 0 0 1.41-1.41L13.41 13l4.95-4.95a1 1 0 0 0 0-1.41z"/>
+          </svg>
+        </li>`;
         autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
         assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
       });
     }
 
-    function removerJogador(nome) {
-      jogadores = jogadores.filter(j => j !== nome);
-      atualizarListaJogadores();
-      enviarEstadoFirebase();
+    function mudarGol(valor) {
+      if (valor === 1) {
+        const autor = document.getElementById("autorGol").value;
+        const assist = document.getElementById("assistenciaGol").value;
+        if (!autor) return alert("Selecione o autor do gol!");
+
+        golsMeuTime++;
+        jogadas.push({ autor, assistencia: assist || null });
+      } else if (valor === -1 && golsMeuTime > 0) {
+        golsMeuTime--;
+        jogadas.pop();
+      }
+      atualizarPlacar();
+      atualizarLinhaTempo();
+      salvarFirebase();
     }
 
-    function adicionarGol() {
-      const autor = document.getElementById("autorGol").value;
-      const assist = document.getElementById("assistenciaGol").value;
-      if (!autor) return alert("Selecione o autor do gol.");
-      golsMeuTime++;
-      document.getElementById("golsMeuTime").innerText = golsMeuTime;
-      jogadas.push({ autor, assistencia: assist || null });
-      atualizarLinhaTempo();
-      enviarEstadoFirebase();
+    function mudarGolAdv(valor) {
+      if (valor === 1) {
+        golsAdversario++;
+      } else if (valor === -1 && golsAdversario > 0) {
+        golsAdversario--;
+      }
+      atualizarPlacar();
+      salvarFirebase();
     }
 
-    function removerUltimaJogada(index) {
-      if (!confirm("Remover esta jogada?")) return;
-      jogadas.splice(index, 1);
-      golsMeuTime--;
-      if (golsMeuTime < 0) golsMeuTime = 0;
+    function atualizarPlacar() {
       document.getElementById("golsMeuTime").innerText = golsMeuTime;
-      atualizarLinhaTempo();
-      enviarEstadoFirebase();
+      document.getElementById("golsAdversario").innerText = golsAdversario;
     }
 
     function atualizarLinhaTempo() {
-      const div = document.getElementById("linhaTempo");
-      div.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      jogadas.forEach((jogada, index) => {
-        const assist = jogada.assistencia ? `<span class="assistencia">(Assist: ${jogada.assistencia})</span>` : "";
-        div.innerHTML += `
+      const linha = document.getElementById("linhaTempo");
+      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      [...jogadas].reverse().forEach(j => {
+        linha.innerHTML += `
           <p>
-            Gol de <strong>${jogada.autor}</strong> ${assist}
-            <svg class="btn-remover-jogada" onclick="removerUltimaJogada(${index})" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M18.36 6.64a1 1 0 0 0-1.41 0L12 11.59 7.05 6.64A1 1 0 0 0 5.64 8.05L10.59 13l-4.95 4.95a1 1 0 1 0 1.41 1.41L12 14.41l4.95 4.95a1 1 0 0 0 1.41-1.41L13.41 13l4.95-4.95a1 1 0 0 0 0-1.41z"/>
-            </svg>
+            ⚽ ${j.autor}<br />
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
           </p>`;
       });
     }
 
-    function mudarGol(qtd) {
-      golsMeuTime += qtd;
-      if (golsMeuTime < 0) golsMeuTime = 0;
-      document.getElementById("golsMeuTime").innerText = golsMeuTime;
-      enviarEstadoFirebase();
-    }
-
-    function mudarGolAdv(qtd) {
-      golsAdversario += qtd;
-      if (golsAdversario < 0) golsAdversario = 0;
-      document.getElementById("golsAdversario").innerText = golsAdversario;
-      enviarEstadoFirebase();
-    }
-
-    function enviarEstadoFirebase() {
-      const estado = {
-        meuTime: document.getElementById("meuTime").value.trim(),
-        adversario: document.getElementById("adversario").value.trim(),
+    function salvarFirebase() {
+      const data = {
+        meuTime: document.getElementById("meuTime").value,
+        adversario: document.getElementById("adversario").value,
         jogadores,
         golsMeuTime,
         golsAdversario,
         jogadas
       };
-      db.ref("jogo").set(estado);
+      db.ref("jogo").set(data);
     }
   </script>
 </body>
