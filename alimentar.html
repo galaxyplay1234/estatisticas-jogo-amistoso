@@ -69,6 +69,18 @@
       padding: 5px 10px;
       margin: 5px 0;
       border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .players-list button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
     .placar {
@@ -100,22 +112,20 @@
       background: #f1f1f1;
       padding: 10px;
       border-radius: 5px;
+      margin-top: 20px;
     }
 
     .timeline p {
-      margin: 5px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      margin: 8px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ddd;
     }
 
-    .timeline button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 2px 6px;
-      border-radius: 4px;
-      cursor: pointer;
+    .assistencia {
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
     }
 
     @media (max-width: 600px) {
@@ -157,17 +167,17 @@
       <div class="time">
         <span id="meuTimeNome">Meu Time</span><br />
         <div class="controle">
-          <button onclick="mudarGol(1)">+1</button>
+          <button onclick="mudarGol(1)">+</button>
           <span id="golsMeuTime">0</span>
-          <button onclick="mudarGol(-1)">-1</button>
+          <button onclick="mudarGol(-1)">-</button>
         </div>
       </div>
       <div class="time">
         <span id="adversarioNome">Adversário</span><br />
         <div class="controle">
-          <button onclick="mudarGolAdv(1)">+1</button>
+          <button onclick="mudarGolAdv(1)">+</button>
           <span id="golsAdversario">0</span>
-          <button onclick="mudarGolAdv(-1)">-1</button>
+          <button onclick="mudarGolAdv(-1)">-</button>
         </div>
       </div>
     </div>
@@ -204,10 +214,16 @@
     function adicionarJogador() {
       const nome = document.getElementById("jogadorNome").value.trim();
       if (!nome) return;
-
       jogadores.push(nome);
-      atualizarListaJogadores();
       document.getElementById("jogadorNome").value = "";
+      atualizarListaJogadores();
+    }
+
+    function removerJogador(nome) {
+      jogadores = jogadores.filter(j => j !== nome);
+      jogadas = jogadas.filter(j => j.autor !== nome && j.assistencia !== nome);
+      atualizarListaJogadores();
+      atualizarLinhaTempo();
     }
 
     function atualizarListaJogadores() {
@@ -220,7 +236,7 @@
       assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
       jogadores.forEach(nome => {
-        ul.innerHTML += `<li>${nome}</li>`;
+        ul.innerHTML += `<li>${nome}<button onclick="removerJogador('${nome}')">❌</button></li>`;
         autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
         assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
       });
@@ -236,6 +252,7 @@
         jogadas.push({ autor, assistencia: assist || null });
       } else if (valor === -1 && golsMeuTime > 0) {
         golsMeuTime--;
+        jogadas.pop(); // Remove última jogada automaticamente
       }
       atualizarPlacar();
       atualizarLinhaTempo();
@@ -255,19 +272,14 @@
       document.getElementById("golsAdversario").innerText = golsAdversario;
     }
 
-    function removerUltimaJogada(index) {
-      jogadas.splice(index, 1);
-      atualizarLinhaTempo();
-    }
-
     function atualizarLinhaTempo() {
       const linha = document.getElementById("linhaTempo");
       linha.innerHTML = "<strong>Linha do Tempo:</strong>";
-      jogadas.forEach((j, i) => {
+      [...jogadas].reverse().forEach(j => {
         linha.innerHTML += `
           <p>
-            ⚽ ${j.autor}${j.assistencia ? " (Assistência: " + j.assistencia + ")" : ""}
-            ${i === jogadas.length - 1 && golsMeuTime < jogadas.length ? `<button onclick="removerUltimaJogada(${i})">❌</button>` : ""}
+            ⚽ ${j.autor}<br />
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
           </p>`;
       });
     }
