@@ -1,161 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Estatísticas do Jogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
-      background: #f5f5f5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: #eef1f5;
     }
 
-    .tempo-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2em;
-      font-weight: bold;
+    .container {
+      max-width: 850px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1a73e8;
+      font-size: 28px;
       margin-bottom: 20px;
-    }
-
-    .bolinha {
-      width: 12px;
-      height: 12px;
-      background-color: red;
-      border-radius: 50%;
-      animation: piscar 1s infinite;
-    }
-
-    @keyframes piscar {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
     }
 
     .placar {
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 30px;
-      background-color: white;
-      padding: 15px 30px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      max-width: 90%;
-    }
-
-    .time-nome {
-      max-width: 140px;
-      word-wrap: break-word;
-      text-align: center;
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-
-    .resultado {
-      font-size: 1.5em;
-      font-weight: bold;
-      white-space: nowrap;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      line-height: 1.2;
-    }
-
-    .estatisticas {
-      width: 100%;
-      max-width: 500px;
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-
-    .jogada {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      display: flex;
       justify-content: space-between;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 25px;
     }
 
-    .jogada:last-child {
-      border-bottom: none;
+    .timeline {
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .timeline p {
+      margin: 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    .assistencia {
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .placar {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
     }
   </style>
 </head>
 <body>
-
-  <div class="tempo-container">
-    <div class="bolinha"></div>
-    <span id="tempo">00:00</span>
+  <div class="container">
+    <h1>Estatísticas do Amistoso</h1>
+    <div class="placar" id="placar">Carregando placar...</div>
+    <div class="timeline" id="linhaTempo">
+      <strong>Estatísticas do Jogo:</strong>
+      <p>Carregando jogadas...</p>
+    </div>
   </div>
 
-  <div class="placar">
-    <div class="time-nome" id="meuTimeNome">Meu Time</div>
-    <div class="resultado" id="placar">0 x 0</div>
-    <div class="time-nome" id="adversarioNome">Adversário</div>
-  </div>
-
-  <div class="estatisticas" id="estatisticas">
-    <!-- Jogadas ao vivo aparecerão aqui -->
-  </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-    // Configuração do Firebase já fornecida
     const firebaseConfig = {
-      apiKey: "AIzaSyD5JHHktAoEb6mPdsjqUrLUCCDjv8osVfQ",
+      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
       databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "926006227708",
-      appId: "1:926006227708:web:99c11df81874e12495a53d"
+      messagingSenderId: "719635751250",
+      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Referência ao caminho do seu jogo no banco
-    const jogoRef = db.ref("jogos/jogo1");
+    const placarEl = document.getElementById("placar");
+    const linhaTempo = document.getElementById("linhaTempo");
 
-    jogoRef.on("value", (snapshot) => {
+    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
 
-      // Atualiza nomes e placar
-      document.getElementById("meuTimeNome").textContent = data.meuTime || "Meu Time";
-      document.getElementById("adversarioNome").textContent = data.adversario || "Adversário";
-      document.getElementById("placar").textContent = `${data.golsMeuTime || 0} x ${data.golsAdversario || 0}`;
+      const timeA = data.meuTime || "Time A";
+      const timeB = data.adversario || "Time B";
+      const golsA = data.golsMeuTime || 0;
+      const golsB = data.golsAdversario || 0;
+      const jogadas = data.jogadas || [];
 
-      // Atualiza tempo
-      if (data.tempo) {
-        document.getElementById("tempo").textContent = data.tempo;
-      }
+      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
-      // Atualiza estatísticas
-      const estatisticas = document.getElementById("estatisticas");
-      estatisticas.innerHTML = "";
+      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      jogadas.slice().reverse().forEach(j => {
+        linhaTempo.innerHTML += `
+          <p>
+            ⚽ ${j.autor}<br/>
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+          </p>`;
+      });
 
-      if (data.estatisticas && Array.isArray(data.estatisticas)) {
-        data.estatisticas.forEach(jogada => {
-          const div = document.createElement("div");
-          div.className = "jogada";
-          div.innerHTML = `
-            <span><strong>${jogada.time}</strong></span>
-            <span>${jogada.jogador}${jogada.assistencia ? ' (Assist: ' + jogada.assistencia + ')' : ''}</span>
-          `;
-          estatisticas.appendChild(div);
-        });
+      if (jogadas.length === 0) {
+        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
       }
     });
   </script>
