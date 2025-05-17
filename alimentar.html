@@ -2,81 +2,101 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Cadastrar Estatísticas</title>
+  <title>Cadastro de Estatísticas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f4f7f9;
+      background: #f2f2f2;
       margin: 0;
       padding: 20px;
-      color: #333;
     }
 
     .container {
-      max-width: 700px;
+      max-width: 800px;
       margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    h1 {
+    h1, h2 {
       text-align: center;
       color: #007bff;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
     }
 
     input, select, button {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 20px;
+      margin-top: 5px;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1em;
     }
 
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-
-    .checkbox-group {
-      display: flex;
-      gap: 20px;
-      margin-top: 10px;
-    }
-
-    .checkbox-group label {
-      font-weight: normal;
-    }
-
-    .jogador {
-      background: #f1f3f5;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    .btn {
-      background: #007bff;
+    button {
+      background-color: #007bff;
       color: white;
-      border: none;
+      font-weight: bold;
       cursor: pointer;
-      font-weight: bold;
-    }
-
-    .btn:hover {
-      background: #0056b3;
-    }
-
-    #sucesso {
-      color: green;
-      font-weight: bold;
-      text-align: center;
-      display: none;
       margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .time-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .time {
+      flex: 1 1 45%;
+    }
+
+    .contador {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .contador button {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+    }
+
+    .jogadores-lista {
+      margin-top: 10px;
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .linha-tempo {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e9f7ef;
+      border-left: 5px solid #28a745;
+      border-radius: 5px;
+    }
+
+    .linha-tempo p {
+      margin: 5px 0;
     }
 
     .link-estatisticas {
@@ -89,41 +109,57 @@
       color: #007bff;
       font-weight: bold;
     }
+
+    @media (max-width: 600px) {
+      .time-container {
+        flex-direction: column;
+      }
+
+      .time {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Cadastro de Estatísticas</h1>
 
-    <label>Nome do seu time:</label>
-    <input type="text" id="meuTime" placeholder="Ex: Real Amistoso" />
+    <div class="time-container">
+      <div class="time">
+        <label>Nome do seu time:</label>
+        <input type="text" id="meuTime" placeholder="Ex: Meu Time FC">
+        <div class="contador">
+          <span>Gols:</span>
+          <button onclick="alterarGols('meu', -1)">−</button>
+          <span id="golsMeuTime">0</span>
+          <button onclick="alterarGols('meu', 1)">+</button>
+        </div>
+      </div>
 
-    <label>Nome do time adversário:</label>
-    <input type="text" id="adversario" placeholder="Ex: Amigos FC" />
-
-    <label>Gols do time adversário:</label>
-    <input type="number" id="golsAdversario" min="0" />
-
-    <hr />
-
-    <h2>Jogadores do seu time</h2>
-
-    <label>Nome do jogador:</label>
-    <input type="text" id="nomeJogador" placeholder="Ex: João Silva" />
-
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="fezGol" /> Gol</label>
-      <label><input type="checkbox" id="fezAssistencia" /> Assistência</label>
+      <div class="time">
+        <label>Nome do time adversário:</label>
+        <input type="text" id="adversario" placeholder="Ex: Adversário FC">
+        <div class="contador">
+          <span>Gols:</span>
+          <button onclick="alterarGols('adversario', -1)">−</button>
+          <span id="golsAdversario">0</span>
+          <button onclick="alterarGols('adversario', 1)">+</button>
+        </div>
+      </div>
     </div>
 
-    <button class="btn" onclick="adicionarJogador()">Adicionar Jogador</button>
+    <hr>
 
-    <div id="listaJogadores"></div>
+    <h2>Jogadores do seu time</h2>
+    <input type="text" id="nomeJogador" placeholder="Nome do jogador">
+    <button onclick="adicionarJogador()">Adicionar Jogador</button>
 
-    <hr />
+    <div class="jogadores-lista" id="listaJogadores"></div>
 
-    <button class="btn" onclick="salvarDados()">Salvar Estatísticas</button>
-    <p id="sucesso">✅ Dados salvos com sucesso!</p>
+    <div class="linha-tempo" id="linhaTempo"></div>
+
+    <button onclick="salvarTudo()">Salvar Estatísticas</button>
 
     <div class="link-estatisticas">
       <a href="estatisticas.html">→ Ver estatísticas do jogo</a>
@@ -131,66 +167,79 @@
   </div>
 
   <script>
-    const jogadores = [];
+    let jogadores = [];
+    let jogadas = [];
+    let golsMeuTime = 0;
+    let golsAdversario = 0;
 
     function adicionarJogador() {
       const nome = document.getElementById('nomeJogador').value.trim();
-      const fezGol = document.getElementById('fezGol').checked;
-      const fezAssistencia = document.getElementById('fezAssistencia').checked;
-
-      if (!nome) {
-        alert('Digite o nome do jogador');
-        return;
+      if (nome && !jogadores.includes(nome)) {
+        jogadores.push(nome);
+        document.getElementById('nomeJogador').value = '';
+        atualizarListaJogadores();
       }
-
-      jogadores.push({
-        nome: nome,
-        gols: fezGol,
-        assistencias: fezAssistencia
-      });
-
-      document.getElementById('nomeJogador').value = '';
-      document.getElementById('fezGol').checked = false;
-      document.getElementById('fezAssistencia').checked = false;
-
-      atualizarLista();
     }
 
-    function atualizarLista() {
+    function atualizarListaJogadores() {
       const lista = document.getElementById('listaJogadores');
-      lista.innerHTML = '';
-
-      jogadores.forEach((j, i) => {
-        let texto = `<strong>${j.nome}</strong>`;
-        if (j.gols) texto += ' ⚽';
-        if (j.assistencias) texto += ' 🎯';
-        lista.innerHTML += `<div class="jogador">${texto}</div>`;
-      });
+      lista.innerHTML = jogadores.map(j => `• ${j}`).join('<br>');
     }
 
-    function salvarDados() {
-      const meuTime = document.getElementById('meuTime').value.trim();
-      const adversario = document.getElementById('adversario').value.trim();
-      const golsAdversario = parseInt(document.getElementById('golsAdversario').value) || 0;
+    function alterarGols(time, valor) {
+      if (time === 'meu') {
+        golsMeuTime = Math.max(0, golsMeuTime + valor);
+        document.getElementById('golsMeuTime').innerText = golsMeuTime;
+        if (valor > 0) registrarJogada();
+      } else {
+        golsAdversario = Math.max(0, golsAdversario + valor);
+        document.getElementById('golsAdversario').innerText = golsAdversario;
+      }
+    }
 
-      if (!meuTime || !adversario) {
-        alert('Preencha os nomes dos times');
+    function registrarJogada() {
+      if (jogadores.length === 0) {
+        alert("Adicione jogadores antes de registrar um gol.");
         return;
       }
 
+      const autor = prompt("Quem fez o gol? (Digite o nome exatamente)");
+      if (!jogadores.includes(autor)) return alert("Nome inválido.");
+
+      const assist = prompt("Quem deu a assistência? (Deixe em branco se nenhum)");
+      if (assist && !jogadores.includes(assist)) return alert("Nome inválido.");
+
+      jogadas.push({ autor, assistencia: assist });
+      atualizarLinhaTempo();
+    }
+
+    function atualizarLinhaTempo() {
+      const el = document.getElementById('linhaTempo');
+      el.innerHTML = '<h3>Linha do tempo:</h3>';
+      jogadas.forEach((j, i) => {
+        let txt = `⚽ ${j.autor}`;
+        if (j.assistencia) txt += ` (Assistência: ${j.assistencia})`;
+        el.innerHTML += `<p>${txt}</p>`;
+      });
+    }
+
+    function salvarTudo() {
       const dados = {
-        meuTime,
-        adversario,
+        meuTime: document.getElementById('meuTime').value.trim(),
+        adversario: document.getElementById('adversario').value.trim(),
+        golsMeuTime,
         golsAdversario,
-        jogadores
+        jogadores,
+        jogadas
       };
 
-      localStorage.setItem('dadosJogo', JSON.stringify(dados));
-      document.getElementById('sucesso').style.display = 'block';
+      if (!dados.meuTime || !dados.adversario) {
+        alert("Preencha os nomes dos times.");
+        return;
+      }
 
-      setTimeout(() => {
-        document.getElementById('sucesso').style.display = 'none';
-      }, 3000);
+      localStorage.setItem('dadosJogo', JSON.stringify(dados));
+      alert("Dados salvos com sucesso!");
     }
   </script>
 </body>
