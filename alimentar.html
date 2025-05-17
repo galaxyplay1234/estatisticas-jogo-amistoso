@@ -2,250 +2,273 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Alimentar Estatísticas</title>
+  <title>Cadastro de Jogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
+      background: #eef1f5;
     }
-
     .container {
-      max-width: 500px;
+      max-width: 850px;
       margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-
+    h1 {
+      text-align: center;
+      color: #1a73e8;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
+    }
     input, select, button {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0;
+      padding: 10px 12px;
+      margin-top: 6px;
+      margin-bottom: 12px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 16px;
+      font-size: 15px;
     }
-
     button {
       background-color: #1a73e8;
       color: white;
+      font-weight: 600;
       border: none;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.3s ease;
     }
-
     button:hover {
-      background-color: #1669c1;
+      background-color: #155cb1;
     }
-
-    .placar {
-      font-size: 22px;
-      font-weight: bold;
-      margin: 20px 0;
-      text-align: center;
-    }
-
-    .linha-tempo {
-      margin-top: 20px;
-    }
-
-    .linha-tempo p {
-      background: #f9f9f9;
-      padding: 8px;
-      border-radius: 6px;
-      margin: 5px 0;
-    }
-
-    .assistencia {
-      color: #555;
-      font-size: 14px;
-    }
-
-    .tempo-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .tempo-info {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .btn-group {
+    .teams {
       display: flex;
       gap: 10px;
     }
-
-    .btn-pequeno {
-      padding: 10px 16px;
-      background-color: #1a73e8;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
+    .players-list {
+      margin-top: 10px;
     }
-
-    .btn-pequeno:hover {
-      background-color: #1669c1;
+    .players-list ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .players-list li {
+      background: #f0f4f8;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+    }
+    .players-list svg {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      fill: #dc3545;
+    }
+    .placar {
+      display: flex;
+      justify-content: space-between;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+    .time {
+      flex: 1;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .controle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .controle button {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      border-radius: 50%;
+      padding: 0;
+    }
+    .controle span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
+    }
+    .gol-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .timeline {
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+    .timeline p {
+      margin: 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+    }
+    .assistencia {
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
+    }
+    .cronometro {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .cronometro span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
+    }
+    @media (max-width: 600px) {
+      .teams {
+        flex-direction: column;
+      }
+      .placar {
+        flex-direction: column;
+        align-items: center;
+      }
+      .controle {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Estatísticas - Cadastro</h2>
+    <h1>Cadastro de Amistoso</h1>
 
-    <div class="tempo-container">
-      <div class="tempo-info">⏱ Tempo de Jogo: <span id="tempoJogo">00:00</span></div>
-      <div class="btn-group">
-        <button class="btn-pequeno" onclick="iniciarJogo()">Iniciar Jogo</button>
-        <button class="btn-pequeno" onclick="pararJogo()">Parar Jogo</button>
+    <div class="cronometro">
+      <button onclick="iniciarCronometro()">▶️ Iniciar</button>
+      <button onclick="pararCronometro()">⏹️ Parar</button>
+      <span id="tempo">00:00</span>
+    </div>
+
+    <label>Seu Time:</label>
+    <input type="text" id="meuTime" placeholder="Nome do seu time" />
+
+    <label>Time Adversário:</label>
+    <input type="text" id="adversario" placeholder="Nome do time adversário" />
+
+    <label>Adicionar Jogador ao Seu Time:</label>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="jogadorNome" placeholder="Nome do jogador" />
+      <button onclick="adicionarJogador()">Adicionar</button>
+    </div>
+
+    <div class="players-list">
+      <ul id="listaJogadores"></ul>
+    </div>
+
+    <div class="placar">
+      <div class="time">
+        <span id="meuTimeNome">Meu Time</span>
+        <div class="controle">
+          <button onclick="mudarGol(1)">+</button>
+          <span id="golsMeuTime">0</span>
+          <button onclick="mudarGol(-1)">-</button>
+        </div>
+      </div>
+      <div class="time">
+        <span id="adversarioNome">Adversário</span>
+        <div class="controle">
+          <button onclick="mudarGolAdv(1)">+</button>
+          <span id="golsAdversario">0</span>
+          <button onclick="mudarGolAdv(-1)">-</button>
+        </div>
       </div>
     </div>
 
-    <input type="text" id="meuTime" placeholder="Seu time">
-    <input type="text" id="adversario" placeholder="Adversário">
-    <input type="text" id="jogador" placeholder="Adicionar jogador">
-    <button onclick="adicionarJogador()">Adicionar Jogador</button>
+    <div class="gol-form">
+      <label>Autor do Gol:</label>
+      <select id="autorGol"></select>
 
-    <select id="autorGol">
-      <option value="">Autor do gol</option>
-    </select>
-    <select id="assistenciaGol">
-      <option value="">Assistência (opcional)</option>
-      <option value="Sem assistência">Sem assistência</option>
-    </select>
-    <div class="btn-group">
-      <button class="btn-pequeno" onclick="mudarGol(1)">+ Gol</button>
-      <button class="btn-pequeno" onclick="mudarGol(-1)">- Gol</button>
+      <label>Assistência:</label>
+      <select id="assistenciaGol">
+        <option value="">Sem assistência</option>
+      </select>
     </div>
 
-    <div class="placar" id="placar">0 x 0</div>
-
-    <div class="linha-tempo" id="linhaTempo"><strong>Estatísticas do Jogo:</strong></div>
+    <div class="timeline" id="linhaTempo">
+      <strong>Estatísticas do Jogo:</strong>
+    </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
+      apiKey: "AIzaSyDhB1U5mM_0DwGbUP0PfEBLTB2evLLMFw8",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
       databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "719635751250",
-      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
+      messagingSenderId: "277243744456",
+      appId: "1:277243744456:web:dc0c3c5c490b61cb836b69"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const ref = db.ref("estatisticas");
+    const ref = db.ref("jogoAmistoso");
 
     let jogadores = [];
     let golsMeuTime = 0;
     let golsAdversario = 0;
     let jogadas = [];
 
-    let cronometro = null;
-    let segundosTotais = 0;
-    let jogoAtivo = false;
+    let cronometroAtivo = false;
+    let segundos = 0;
+    let intervalo;
 
-    function formatarTempo(segundos) {
-      const min = String(Math.floor(segundos / 60)).padStart(2, '0');
-      const seg = String(segundos % 60).padStart(2, '0');
-      return `${min}:${seg}`;
+    function formatarTempo(s) {
+      const min = Math.floor(s / 60).toString().padStart(2, "0");
+      const sec = (s % 60).toString().padStart(2, "0");
+      return `${min}:${sec}`;
     }
 
-    function atualizarTempo() {
-      segundosTotais++;
-      document.getElementById("tempoJogo").innerText = formatarTempo(segundosTotais);
-      syncFirebase();
+    function iniciarCronometro() {
+      if (cronometroAtivo) return;
+      cronometroAtivo = true;
+      intervalo = setInterval(() => {
+        segundos++;
+        document.getElementById("tempo").innerText = formatarTempo(segundos);
+      }, 1000);
     }
 
-    function iniciarJogo() {
-      if (!cronometro) {
-        jogoAtivo = true;
-        cronometro = setInterval(atualizarTempo, 1000);
-      }
-    }
-
-    function pararJogo() {
-      jogoAtivo = false;
-      clearInterval(cronometro);
-      cronometro = null;
-      syncFirebase();
-    }
-
-    function adicionarJogador() {
-      const nome = document.getElementById("jogador").value.trim();
-      if (nome && !jogadores.includes(nome)) {
-        jogadores.push(nome);
-        jogadores.sort();
-
-        atualizarDropdowns();
-        document.getElementById("jogador").value = "";
-        syncFirebase();
-      }
-    }
-
-    function atualizarDropdowns() {
-      const autor = document.getElementById("autorGol");
-      const assist = document.getElementById("assistenciaGol");
-
-      autor.innerHTML = `<option value="">Autor do gol</option>`;
-      assist.innerHTML = `<option value="">Assistência (opcional)</option><option value="Sem assistência">Sem assistência</option>`;
-
-      jogadores.forEach(j => {
-        autor.innerHTML += `<option value="${j}">${j}</option>`;
-        assist.innerHTML += `<option value="${j}">${j}</option>`;
-      });
-    }
-
-    function mudarGol(valor) {
-      if (valor === 1) {
-        const autor = document.getElementById("autorGol").value;
-        const assist = document.getElementById("assistenciaGol").value;
-        if (!autor) return alert("Selecione o autor do gol!");
-
-        golsMeuTime++;
-        jogadas.push({ 
-          autor, 
-          assistencia: assist === "Sem assistência" ? null : assist,
-          tempo: formatarTempo(segundosTotais)
-        });
-
-      } else if (valor === -1 && golsMeuTime > 0) {
-        golsMeuTime--;
-        jogadas.pop();
-      }
-
-      atualizarPlacar();
-      atualizarLinhaTempo();
-      syncFirebase();
-    }
-
-    function atualizarPlacar() {
-      document.getElementById("placar").innerText = `${golsMeuTime} x ${golsAdversario}`;
-    }
-
-    function atualizarLinhaTempo() {
-      const linha = document.getElementById("linhaTempo");
-      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      [...jogadas].reverse().forEach(j => {
-        linha.innerHTML += `
-          <p>
-            <span style="color:#1a73e8; font-weight:bold;">[${j.tempo || '00:00'}]</span> ⚽ ${j.autor}<br />
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
+    function pararCronometro() {
+      clearInterval(intervalo);
+      cronometroAtivo = false;
     }
 
     function syncFirebase() {
@@ -255,8 +278,101 @@
         jogadores,
         golsMeuTime,
         golsAdversario,
-        jogadas,
-        tempo: formatarTempo(segundosTotais)
+        jogadas
+      });
+    }
+
+    function atualizarNomes() {
+      document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
+      document.getElementById("adversarioNome").innerText = document.getElementById("adversario").value || "Adversário";
+      syncFirebase();
+    }
+
+    document.getElementById("meuTime").addEventListener("input", atualizarNomes);
+    document.getElementById("adversario").addEventListener("input", atualizarNomes);
+
+    function adicionarJogador() {
+      const nome = document.getElementById("jogadorNome").value.trim();
+      if (!nome || jogadores.includes(nome)) return;
+      jogadores.push(nome);
+      document.getElementById("jogadorNome").value = "";
+      atualizarListaJogadores();
+      syncFirebase();
+    }
+
+    function removerJogador(nome) {
+      jogadores = jogadores.filter(j => j !== nome);
+      jogadas = jogadas.filter(j => j.autor !== nome && j.assistencia !== nome);
+      atualizarListaJogadores();
+      atualizarLinhaTempo();
+      syncFirebase();
+    }
+
+    function atualizarListaJogadores() {
+      jogadores.sort((a, b) => a.localeCompare(b));
+      const ul = document.getElementById("listaJogadores");
+      const autorSel = document.getElementById("autorGol");
+      const assistSel = document.getElementById("assistenciaGol");
+
+      ul.innerHTML = "";
+      autorSel.innerHTML = "";
+      assistSel.innerHTML = '<option value="">Sem assistência</option>';
+
+      jogadores.forEach(nome => {
+        ul.innerHTML += `<li>${nome}
+          <svg onclick="removerJogador('${nome}')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M18.36 6.64a1 1 0 0 0-1.41 0L12 11.59 7.05 6.64A1 1 0 0 0 5.64 8.05L10.59 13l-4.95 4.95a1 1 0 1 0 1.41 1.41L12 14.41l4.95 4.95a1 1 0 0 0 1.41-1.41L13.41 13l4.95-4.95a1 1 0 0 0 0-1.41z"/>
+          </svg>
+        </li>`;
+        autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
+        assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
+      });
+    }
+
+    function mudarGol(valor) {
+      if (valor === 1) {
+        const autor = document.getElementById("autorGol").value;
+        const assist = document.getElementById("assistenciaGol").value;
+        if (!autor) return alert("Selecione o autor do gol!");
+        golsMeuTime++;
+        jogadas.push({
+          tempo: formatarTempo(segundos),
+          autor,
+          assistencia: assist || null
+        });
+      } else if (valor === -1 && golsMeuTime > 0) {
+        golsMeuTime--;
+        jogadas.pop();
+      }
+      atualizarPlacar();
+      atualizarLinhaTempo();
+      syncFirebase();
+    }
+
+    function mudarGolAdv(valor) {
+      if (valor === 1) {
+        golsAdversario++;
+      } else if (valor === -1 && golsAdversario > 0) {
+        golsAdversario--;
+      }
+      atualizarPlacar();
+      syncFirebase();
+    }
+
+    function atualizarPlacar() {
+      document.getElementById("golsMeuTime").innerText = golsMeuTime;
+      document.getElementById("golsAdversario").innerText = golsAdversario;
+    }
+
+    function atualizarLinhaTempo() {
+      const linha = document.getElementById("linhaTempo");
+      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      [...jogadas].reverse().forEach(j => {
+        linha.innerHTML += `
+          <p>
+            <strong>${j.tempo}</strong> ⚽ ${j.autor}<br />
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+          </p>`;
       });
     }
   </script>
