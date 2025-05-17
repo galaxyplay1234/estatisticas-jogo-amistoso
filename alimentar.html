@@ -1,148 +1,237 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadastro de Jogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-      background: #f9f9f9;
-    }
-    h2 {
-      text-align: center;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input, button, select {
-      padding: 8px;
-      margin-top: 5px;
-      width: 100%;
+    * {
       box-sizing: border-box;
     }
-    .section {
-      margin-bottom: 20px;
-      background: #fff;
-      padding: 15px;
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    ul {
-      padding: 0;
-      list-style: none;
+
+    h1 {
+      text-align: center;
+      color: #007bff;
     }
-    li {
-      padding: 5px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #eee;
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
     }
-    .jogador-x {
-      background: none;
-      border: none;
-      cursor: pointer;
-      margin-left: 10px;
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
-    .jogador-x svg {
-      stroke: red;
-    }
-    .gol-controls {
+
+    .teams {
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      margin: 10px 0;
     }
+
+    .teams input {
+      width: 100%;
+    }
+
+    .players-list {
+      margin-top: 10px;
+    }
+
+    .players-list ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .players-list li {
+      background: #e9ecef;
+      padding: 5px 10px;
+      margin: 5px 0;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .players-list .remove-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .players-list .remove-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: red;
+    }
+
+    .placar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .placar .time {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .placar .controle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gol-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     .timeline {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 5px;
       margin-top: 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
-    .evento {
-      margin-bottom: 10px;
+
+    .timeline p {
+      margin: 8px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ddd;
     }
+
     .assistencia {
       font-size: 0.9em;
       color: #777;
-      margin-left: 10px;
-      display: block;
+      margin-top: 2px;
+      margin-left: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .teams {
+        flex-direction: column;
+      }
+
+      .placar {
+        flex-direction: column;
+      }
+
+      .placar .controle {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Cadastro de Jogo</h2>
+  <div class="container">
+    <h1>Cadastro de Amistoso</h1>
 
-  <div class="section">
-    <label for="meuTime">Nome do seu time:</label>
-    <input type="text" id="meuTime" placeholder="Seu time" />
+    <label>Seu Time:</label>
+    <input type="text" id="meuTime" placeholder="Nome do seu time" />
 
-    <label for="adversario">Nome do time adversário:</label>
-    <input type="text" id="adversario" placeholder="Adversário" />
+    <label>Time Adversário:</label>
+    <input type="text" id="adversario" placeholder="Nome do time adversário" />
 
-    <label for="jogador">Adicionar jogador ao seu time:</label>
-    <div style="display: flex; gap: 10px;">
-      <input type="text" id="jogador" placeholder="Nome do jogador" />
+    <label>Adicionar Jogador ao Seu Time:</label>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="jogadorNome" placeholder="Nome do jogador" />
       <button onclick="adicionarJogador()">Adicionar</button>
     </div>
-    <ul id="listaJogadores"></ul>
-  </div>
 
-  <div class="section">
-    <label>Gols do Seu Time:</label>
-    <div class="gol-controls">
-      <button onclick="adicionarGol()">+</button>
-      <button onclick="removerGol()">-</button>
+    <div class="players-list">
+      <ul id="listaJogadores"></ul>
     </div>
-    <label>Autor do Gol:</label>
-    <select id="autorGol"></select>
 
-    <label>Assistência:</label>
-    <select id="assistenciaGol">
-      <option value="">Sem assistência</option>
-    </select>
-  </div>
-
-  <div class="section">
-    <label>Gols do Adversário:</label>
-    <div class="gol-controls">
-      <button onclick="golsAdversario++; atualizarLinhaTempo()">+</button>
-      <button onclick="if(golsAdversario>0){golsAdversario--; atualizarLinhaTempo()}">-</button>
+    <div class="placar">
+      <div class="time">
+        <span id="meuTimeNome">Meu Time</span><br />
+        <div class="controle">
+          <button onclick="mudarGol(1)">+</button>
+          <span id="golsMeuTime">0</span>
+          <button onclick="mudarGol(-1)">-</button>
+        </div>
+      </div>
+      <div class="time">
+        <span id="adversarioNome">Adversário</span><br />
+        <div class="controle">
+          <button onclick="mudarGolAdv(1)">+</button>
+          <span id="golsAdversario">0</span>
+          <button onclick="mudarGolAdv(-1)">-</button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="timeline" id="linhaTempo">
-    <strong>Estatísticas do Jogo:</strong>
+    <div class="gol-form">
+      <label>Autor do Gol:</label>
+      <select id="autorGol"></select>
+
+      <label>Assistência:</label>
+      <select id="assistenciaGol">
+        <option value="">Sem assistência</option>
+      </select>
+    </div>
+
+    <div class="timeline" id="linhaTempo">
+      <strong>Estatísticas do Jogo:</strong>
+    </div>
   </div>
 
   <script>
     let jogadores = [];
     let golsMeuTime = 0;
     let golsAdversario = 0;
-    let eventos = [];
+    let jogadas = [];
+
+    function atualizarNomes() {
+      document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
+      document.getElementById("adversarioNome").innerText = document.getElementById("adversario").value || "Adversário";
+    }
+
+    document.getElementById("meuTime").addEventListener("input", atualizarNomes);
+    document.getElementById("adversario").addEventListener("input", atualizarNomes);
 
     function adicionarJogador() {
-      const nome = document.getElementById("jogador").value.trim();
-      if (nome && !jogadores.includes(nome)) {
-        jogadores.push(nome);
-        jogadores.sort((a, b) => a.localeCompare(b));
-        atualizarListaJogadores();
-        document.getElementById("jogador").value = "";
-      }
+      const nome = document.getElementById("jogadorNome").value.trim();
+      if (!nome || jogadores.includes(nome)) return;
+      jogadores.push(nome);
+      document.getElementById("jogadorNome").value = "";
+      atualizarListaJogadores();
     }
 
     function removerJogador(nome) {
       jogadores = jogadores.filter(j => j !== nome);
+      jogadas = jogadas.filter(j => j.autor !== nome && j.assistencia !== nome);
       atualizarListaJogadores();
+      atualizarLinhaTempo();
     }
 
     function atualizarListaJogadores() {
+      jogadores.sort();
       const ul = document.getElementById("listaJogadores");
       const autorSel = document.getElementById("autorGol");
       const assistSel = document.getElementById("assistenciaGol");
@@ -152,59 +241,57 @@
       assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
       jogadores.forEach(nome => {
-        const li = document.createElement("li");
-        li.textContent = nome;
-
-        const btn = document.createElement("button");
-        btn.className = "jogador-x";
-        btn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>`;
-        btn.onclick = () => removerJogador(nome);
-        li.appendChild(btn);
-        ul.appendChild(li);
-
+        ul.innerHTML += `
+          <li>${nome}
+            <button class="remove-btn" onclick="removerJogador('${nome}')">
+              <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </li>`;
         autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
         assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
       });
     }
 
-    function adicionarGol() {
-      const autor = document.getElementById("autorGol").value;
-      const assist = document.getElementById("assistenciaGol").value;
+    function mudarGol(valor) {
+      if (valor === 1) {
+        const autor = document.getElementById("autorGol").value;
+        const assist = document.getElementById("assistenciaGol").value;
+        if (!autor) return alert("Selecione o autor do gol!");
 
-      if (!autor) return alert("Selecione o autor do gol.");
-
-      golsMeuTime++;
-      eventos.push({ autor, assistencia: assist });
+        golsMeuTime++;
+        jogadas.push({ autor, assistencia: assist || null });
+      } else if (valor === -1 && golsMeuTime > 0) {
+        golsMeuTime--;
+        jogadas.pop(); // remove a última jogada
+      }
+      atualizarPlacar();
       atualizarLinhaTempo();
     }
 
-    function removerGol() {
-      if (golsMeuTime > 0) {
-        golsMeuTime--;
-        eventos.pop();
-        atualizarLinhaTempo();
+    function mudarGolAdv(valor) {
+      if (valor === 1) {
+        golsAdversario++;
+      } else if (valor === -1 && golsAdversario > 0) {
+        golsAdversario--;
       }
+      atualizarPlacar();
+    }
+
+    function atualizarPlacar() {
+      document.getElementById("golsMeuTime").innerText = golsMeuTime;
+      document.getElementById("golsAdversario").innerText = golsAdversario;
     }
 
     function atualizarLinhaTempo() {
       const linha = document.getElementById("linhaTempo");
-      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong><br><br>";
-
-      [...eventos].reverse().forEach(e => {
+      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      [...jogadas].reverse().forEach(j => {
         linha.innerHTML += `
-          <div class="evento">
-            ${e.autor} (Gol)
-            <span class="assistencia">${e.assistencia ? "Assistência: " + e.assistencia : "Sem assistência"}</span>
-          </div>`;
+          <p>
+            ⚽ ${j.autor}<br />
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+          </p>`;
       });
-
-      linha.innerHTML += `
-        <div style="margin-top: 15px;"><strong>Placar:</strong><br>
-        ${(document.getElementById("meuTime").value || 'Meu Time')} ${golsMeuTime} x ${golsAdversario} ${(document.getElementById("adversario").value || 'Adversário')}</div>`;
     }
   </script>
 </body>
