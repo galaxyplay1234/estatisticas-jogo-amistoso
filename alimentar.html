@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Alimentar Estatísticas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #007bff;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .player-list {
+      margin-top: 15px;
+    }
+    .player-item {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .player-item input[type="checkbox"] {
+      margin-left: 10px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      margin-top: 15px;
+      margin-right: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .actions {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
 
+<div class="container">
+  <h1>Cadastro de Estatísticas</h1>
+
+  <label>Seu Time</label>
+  <input type="text" id="meuTime" placeholder="Digite o nome do seu time">
+
+  <label>Time Adversário</label>
+  <input type="text" id="adversario" placeholder="Digite o nome do adversário">
+
+  <label>Gols do Adversário</label>
+  <input type="number" id="golsAdversario" min="0" value="0">
+
+  <hr>
+
+  <label>Nome do Jogador</label>
+  <input type="text" id="nomeJogador" placeholder="Digite o nome do jogador">
+  <button class="btn" onclick="adicionarJogador()">Adicionar Jogador</button>
+
+  <div class="player-list" id="listaJogadores">
+    <!-- Jogadores vão aparecer aqui -->
+  </div>
+
+  <div class="actions">
+    <button class="btn" onclick="salvarDados()">Salvar</button>
+    <button class="btn" onclick="limparDados()">Limpar</button>
+    <button class="btn" onclick="verEstatisticas()">Ver Estatísticas</button>
+  </div>
+</div>
+
+<script>
+  let jogadores = [];
+
+  function adicionarJogador() {
+    const nome = document.getElementById('nomeJogador').value.trim();
+    if (!nome) return;
+
+    const id = Date.now();
+
+    jogadores.push({ id, nome, gols: false, assistencias: false });
+    document.getElementById('nomeJogador').value = '';
+    renderJogadores();
+  }
+
+  function renderJogadores() {
+    const lista = document.getElementById('listaJogadores');
+    lista.innerHTML = '';
+    jogadores.forEach(jogador => {
+      const div = document.createElement('div');
+      div.className = 'player-item';
+      div.innerHTML = `
+        ${jogador.nome}
+        <span>
+          <label><input type="checkbox" onchange="toggleGol(${jogador.id})" ${jogador.gols ? 'checked' : ''}> Gol</label>
+          <label><input type="checkbox" onchange="toggleAssistencia(${jogador.id})" ${jogador.assistencias ? 'checked' : ''}> Assistência</label>
+        </span>
+      `;
+      lista.appendChild(div);
+    });
+  }
+
+  function toggleGol(id) {
+    const jogador = jogadores.find(j => j.id === id);
+    jogador.gols = !jogador.gols;
+  }
+
+  function toggleAssistencia(id) {
+    const jogador = jogadores.find(j => j.id === id);
+    jogador.assistencias = !jogador.assistencias;
+  }
+
+  function salvarDados() {
+    const meuTime = document.getElementById('meuTime').value.trim();
+    const adversario = document.getElementById('adversario').value.trim();
+    const golsAdversario = parseInt(document.getElementById('golsAdversario').value);
+
+    if (!meuTime || !adversario) {
+      alert('Preencha o nome dos times.');
+      return;
+    }
+
+    const dados = {
+      meuTime,
+      adversario,
+      golsAdversario,
+      jogadores
+    };
+
+    localStorage.setItem('dadosJogo', JSON.stringify(dados));
+    alert('Dados salvos com sucesso!');
+  }
+
+  function limparDados() {
+    if (confirm('Deseja realmente limpar os dados?')) {
+      jogadores = [];
+      document.getElementById('meuTime').value = '';
+      document.getElementById('adversario').value = '';
+      document.getElementById('golsAdversario').value = 0;
+      renderJogadores();
+      localStorage.removeItem('dadosJogo');
+    }
+  }
+
+  function verEstatisticas() {
+    alert('Aqui redirecionaria para a página principal (ainda vamos criar).');
+    // window.location.href = 'estatisticas.html';
+  }
+</script>
+
+</body>
+</html>
