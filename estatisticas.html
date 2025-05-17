@@ -1,4 +1,3 @@
-<!-- estatistica.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,106 +5,156 @@
   <title>Estatísticas do Jogo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
+    }
+
+    body {
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
 
     .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
+      max-width: 600px;
+      margin: 30px auto;
       padding: 20px;
+      background: #fff;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     h1 {
       text-align: center;
-      color: #007bff;
+      margin-bottom: 10px;
     }
 
     .placar {
       display: flex;
-      justify-content: space-around;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-    }
-
-    .timeline {
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 5px;
+      justify-content: space-between;
       margin-top: 20px;
     }
 
-    .timeline p {
-      margin: 8px 0;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #ddd;
+    .time {
+      width: 48%;
+      text-align: center;
     }
 
-    .assistencia {
-      font-size: 0.9em;
-      color: #777;
-      margin-top: 2px;
-      margin-left: 5px;
+    .time span {
+      display: block;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .timeline {
+      margin-top: 30px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .timeline p {
+      background: #e3f2fd;
+      padding: 8px;
+      border-radius: 4px;
+      margin: 5px 0;
+    }
+
+    .jogadores {
+      margin-top: 20px;
+    }
+
+    .jogadores ul {
+      padding-left: 20px;
+    }
+
+    .jogadores li {
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Estatísticas do Jogo</h1>
+
     <div class="placar">
-      <div><strong id="meuTimeNome">Meu Time</strong>: <span id="golsMeuTime">0</span></div>
-      <div><strong id="adversarioNome">Adversário</strong>: <span id="golsAdversario">0</span></div>
+      <div class="time">
+        <span id="nomeTimeA">Time A</span>
+        <div id="golsA">0</div>
+      </div>
+      <div class="time">
+        <span id="nomeTimeB">Time B</span>
+        <div id="golsB">0</div>
+      </div>
     </div>
 
-    <div class="timeline" id="linhaTempo">
-      <strong>Estatísticas do Jogo:</strong>
+    <div class="timeline">
+      <strong>Linha do Tempo:</strong>
+      <div id="linhaTempo"></div>
+    </div>
+
+    <div class="jogadores">
+      <strong>Jogadores do Seu Time:</strong>
+      <ul id="lista-jogadores"></ul>
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAYrK0qnKo4efc9Z07tCdY_gf9-ez3_G5U",
+      apiKey: "AIzaSyAPl07E20-ROibk9ps5bmxOglGV3BNfbPo",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "884271676766",
-      appId: "1:884271676766:web:c26596d7667483441463cf",
-      measurementId: "G-PPJTF8B1CM",
+      messagingSenderId: "929137267944",
+      appId: "1:929137267944:web:04110e9485409dbd73389c",
       databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com/"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    const jogoRef = ref(db, "jogo");
+    const nomeA = document.getElementById('nomeTimeA');
+    const nomeB = document.getElementById('nomeTimeB');
+    const golsA = document.getElementById('golsA');
+    const golsB = document.getElementById('golsB');
+    const linhaTempo = document.getElementById('linhaTempo');
+    const listaJogadores = document.getElementById('lista-jogadores');
 
-    onValue(jogoRef, (snapshot) => {
+    db.ref("jogoAtual").on("value", snapshot => {
       const data = snapshot.val();
-      if (!data) return;
+      if (data) {
+        nomeA.textContent = data.timeA || "Time A";
+        nomeB.textContent = data.timeB || "Time B";
+        golsA.textContent = data.golsA ?? 0;
+        golsB.textContent = data.golsB ?? 0;
 
-      document.getElementById("meuTimeNome").innerText = data.meuTime || "Meu Time";
-      document.getElementById("adversarioNome").innerText = data.adversario || "Adversário";
-      document.getElementById("golsMeuTime").innerText = data.golsMeuTime;
-      document.getElementById("golsAdversario").innerText = data.golsAdversario;
+        linhaTempo.innerHTML = '';
+        if (Array.isArray(data.estatisticas)) {
+          data.estatisticas.forEach(item => {
+            const p = document.createElement('p');
+            p.textContent = item;
+            linhaTempo.appendChild(p);
+          });
+        }
 
-      const linha = document.getElementById("linhaTempo");
-      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      [...(data.jogadas || [])].reverse().forEach(j => {
-        linha.innerHTML += `
-          <p>
-            ⚽ ${j.autor}<br />
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
+        listaJogadores.innerHTML = '';
+        if (Array.isArray(data.jogadores)) {
+          data.jogadores.forEach(j => {
+            const li = document.createElement('li');
+            li.textContent = j;
+            listaJogadores.appendChild(li);
+          });
+        }
+      }
     });
   </script>
 </body>
