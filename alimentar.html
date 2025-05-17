@@ -10,49 +10,61 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
-      background: #f5f5f5;
+      background: #eef1f5;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 850px;
       margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     h1 {
       text-align: center;
-      color: #007bff;
+      color: #1a73e8;
+      font-size: 28px;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      margin-top: 10px;
-      font-weight: bold;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
     }
 
     input, select, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 10px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      margin-bottom: 12px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #155cb1;
     }
 
     .teams {
       display: flex;
-      justify-content: space-between;
       gap: 10px;
-    }
-
-    .teams input {
-      width: 100%;
     }
 
     .players-list {
@@ -62,67 +74,87 @@
     .players-list ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
 
     .players-list li {
-      background: #e9ecef;
-      padding: 5px 10px;
+      background: #f0f4f8;
+      padding: 8px 12px;
       margin: 5px 0;
-      border-radius: 4px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 15px;
     }
 
-    .players-list .remove-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .players-list .remove-btn svg {
+    .players-list svg {
       width: 16px;
       height: 16px;
-      fill: red;
+      cursor: pointer;
+      fill: #dc3545;
     }
 
     .placar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin: 20px 0;
+      margin: 25px 0;
+      flex-wrap: wrap;
     }
 
-    .placar .time {
+    .time {
       flex: 1;
       text-align: center;
-      font-weight: bold;
+      margin: 10px 0;
     }
 
-    .placar .controle {
+    .controle {
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .controle button {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      border-radius: 50%;
+      padding: 0;
+    }
+
+    .controle span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #444;
     }
 
     .gol-form {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .timeline {
       background: #f1f1f1;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+
+    .timeline strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
     }
 
     .timeline p {
-      margin: 8px 0;
-      padding-bottom: 5px;
+      margin: 10px 0;
+      padding-bottom: 6px;
       border-bottom: 1px solid #ddd;
+      font-size: 15px;
     }
 
     .assistencia {
@@ -139,9 +171,10 @@
 
       .placar {
         flex-direction: column;
+        align-items: center;
       }
 
-      .placar .controle {
+      .controle {
         margin-top: 10px;
       }
     }
@@ -169,7 +202,7 @@
 
     <div class="placar">
       <div class="time">
-        <span id="meuTimeNome">Meu Time</span><br />
+        <span id="meuTimeNome">Meu Time</span>
         <div class="controle">
           <button onclick="mudarGol(1)">+</button>
           <span id="golsMeuTime">0</span>
@@ -177,7 +210,7 @@
         </div>
       </div>
       <div class="time">
-        <span id="adversarioNome">Adversário</span><br />
+        <span id="adversarioNome">Adversário</span>
         <div class="controle">
           <button onclick="mudarGolAdv(1)">+</button>
           <span id="golsAdversario">0</span>
@@ -231,7 +264,7 @@
     }
 
     function atualizarListaJogadores() {
-      jogadores.sort();
+      jogadores.sort((a, b) => a.localeCompare(b));
       const ul = document.getElementById("listaJogadores");
       const autorSel = document.getElementById("autorGol");
       const assistSel = document.getElementById("assistenciaGol");
@@ -241,12 +274,11 @@
       assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
       jogadores.forEach(nome => {
-        ul.innerHTML += `
-          <li>${nome}
-            <button class="remove-btn" onclick="removerJogador('${nome}')">
-              <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
-          </li>`;
+        ul.innerHTML += `<li>${nome}
+          <svg onclick="removerJogador('${nome}')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M18.36 6.64a1 1 0 0 0-1.41 0L12 11.59 7.05 6.64A1 1 0 0 0 5.64 8.05L10.59 13l-4.95 4.95a1 1 0 1 0 1.41 1.41L12 14.41l4.95 4.95a1 1 0 0 0 1.41-1.41L13.41 13l4.95-4.95a1 1 0 0 0 0-1.41z"/>
+          </svg>
+        </li>`;
         autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
         assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
       });
@@ -262,7 +294,7 @@
         jogadas.push({ autor, assistencia: assist || null });
       } else if (valor === -1 && golsMeuTime > 0) {
         golsMeuTime--;
-        jogadas.pop(); // remove a última jogada
+        jogadas.pop();
       }
       atualizarPlacar();
       atualizarLinhaTempo();
