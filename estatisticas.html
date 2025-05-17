@@ -11,33 +11,7 @@
       padding: 20px;
       background: #eef1f5;
     }
-    
-    .status-ao-vivo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  font-weight: 600;
-  color: #d32f2f; /* vermelho escuro */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 16px;
-}
 
-.status-ao-vivo .bola {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: #f44336; /* vermelho vivo */
-  animation: piscar 1.2s infinite ease-in-out;
-  box-shadow: 0 0 6px #f44336;
-}
-
-@keyframes piscar {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-    
     .container {
       max-width: 850px;
       margin: auto;
@@ -45,7 +19,6 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      margin-top: 150px; /* espaço para o placar fixo */
     }
 
     h1 {
@@ -55,51 +28,14 @@
       margin-bottom: 20px;
     }
 
-    /* Placar fixo e centralizado com nomes dos lados */
     .placar {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      padding: 20px 40px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      color: #1a73e8;
-      font-weight: 700;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-      display: grid;
-      grid-template-columns: max-content auto max-content;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      column-gap: 40px;
-      max-width: 90vw;
-      user-select: none;
-      z-index: 1000;
-    }
-
-    .time {
-      max-width: 140px; /* limite largura para quebrar */
-      word-wrap: break-word;
-      white-space: normal; /* permite quebra */
-      font-size: 20px;
-      line-height: 1.2;
-    }
-
-    /* Alinhar o nome do time da esquerda à esquerda */
-    #timeA {
-      text-align: left;
-    }
-
-    /* Alinhar o nome do time da direita à direita */
-    #timeB {
-      text-align: right;
-    }
-
-    .placar-central {
-      font-size: 28px;
-      white-space: nowrap; /* não quebra o placar */
-      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 25px;
     }
 
     .timeline {
@@ -131,36 +67,17 @@
 
     @media (max-width: 600px) {
       .placar {
-        grid-template-columns: 1fr;
-        padding: 15px 20px;
-        row-gap: 12px;
+        flex-direction: column;
         text-align: center;
-      }
-
-      #timeA, #timeB {
-        max-width: 100%;
-        text-align: center !important;
-      }
-
-      .placar-central {
-        font-size: 26px;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="placar" id="placar">
-    <div class="time" id="timeA">Carregando...</div>
-    <div class="placar-central" id="placarCentral">0 x 0</div>
-    <div class="time" id="timeB">Carregando...</div>
-  </div>
-
   <div class="container">
     <h1>Estatísticas do Amistoso</h1>
-      <div class="status-ao-vivo">
-  <div class="bola"></div>
-  <span>ao vivo</span>
-</div>
+    <div class="placar" id="placar">Carregando placar...</div>
     <div class="timeline" id="linhaTempo">
       <strong>Estatísticas do Jogo:</strong>
       <p>Carregando jogadas...</p>
@@ -183,9 +100,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const timeAEl = document.getElementById("timeA");
-    const timeBEl = document.getElementById("timeB");
-    const placarCentralEl = document.getElementById("placarCentral");
+    const placarEl = document.getElementById("placar");
     const linhaTempo = document.getElementById("linhaTempo");
 
     firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
@@ -198,21 +113,19 @@
       const golsB = data.golsAdversario || 0;
       const jogadas = data.jogadas || [];
 
-      timeAEl.textContent = timeA;
-      timeBEl.textContent = timeB;
-      placarCentralEl.textContent = `${golsA} x ${golsB}`;
+      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
       linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      jogadas.slice().reverse().forEach(j => {
+        linhaTempo.innerHTML += `
+          <p>
+            ⚽ ${j.autor}<br/>
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+          </p>`;
+      });
+
       if (jogadas.length === 0) {
         linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
-      } else {
-        jogadas.slice().reverse().forEach(j => {
-          linhaTempo.innerHTML += `
-            <p>
-              ⚽ ${j.autor}<br/>
-              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-            </p>`;
-        });
       }
     });
   </script>
