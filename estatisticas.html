@@ -5,10 +5,6 @@
   <title>Estatísticas do Jogo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
@@ -19,32 +15,27 @@
     .container {
       max-width: 850px;
       margin: auto;
-      background: #ffffff;
+      background: #fff;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
       text-align: center;
       color: #1a73e8;
-      font-size: 26px;
+      font-size: 28px;
       margin-bottom: 20px;
     }
 
-    .card {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
     .placar {
-      font-size: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 24px;
       font-weight: bold;
-      color: #333;
-      text-align: center;
+      color: #444;
+      margin-bottom: 25px;
     }
 
     .timeline {
@@ -76,69 +67,67 @@
 
     @media (max-width: 600px) {
       .placar {
-        font-size: 18px;
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Estatísticas do Jogo</h1>
-
-    <div class="card">
-      <div class="placar" id="placar">Carregando placar...</div>
-    </div>
-
-    <div class="card timeline" id="linhaTempo">
+    <h1>Estatísticas do Amistoso</h1>
+    <div class="placar" id="placar">Carregando placar...</div>
+    <div class="timeline" id="linhaTempo">
       <strong>Estatísticas do Jogo:</strong>
+      <p>Carregando jogadas...</p>
     </div>
   </div>
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyDQ41bOfBXK-hIu5KrFFwRMMe5LBzLRxN8",
+      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
+      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "994742957937",
-      appId: "1:994742957937:web:02a46255855e325139a416",
-      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com"
+      messagingSenderId: "719635751250",
+      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     const placarEl = document.getElementById("placar");
-    const linhaTempoEl = document.getElementById("linhaTempo");
+    const linhaTempo = document.getElementById("linhaTempo");
 
-    function renderizar() {
-      db.ref("/").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (!data) return;
+    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
 
-        const meuTime = data.meuTime || "Meu Time";
-        const adversario = data.adversario || "Adversário";
-        const golsMeuTime = data.golsMeuTime || 0;
-        const golsAdversario = data.golsAdversario || 0;
-        const jogadas = data.jogadas || [];
+      const timeA = data.meuTime || "Time A";
+      const timeB = data.adversario || "Time B";
+      const golsA = data.golsMeuTime || 0;
+      const golsB = data.golsAdversario || 0;
+      const jogadas = data.jogadas || [];
 
-        placarEl.innerText = `${meuTime} ${golsMeuTime} x ${golsAdversario} ${adversario}`;
+      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
-        linhaTempoEl.innerHTML = `<strong>Estatísticas do Jogo:</strong>`;
-        [...jogadas].reverse().forEach(j => {
-          linhaTempoEl.innerHTML += `
-            <p>
-              ⚽ ${j.autor}<br />
-              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-            </p>`;
-        });
+      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      jogadas.slice().reverse().forEach(j => {
+        linhaTempo.innerHTML += `
+          <p>
+            ⚽ ${j.autor}<br/>
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+          </p>`;
       });
-    }
 
-    renderizar();
+      if (jogadas.length === 0) {
+        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+      }
+    });
   </script>
 </body>
 </html>
