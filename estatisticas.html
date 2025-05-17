@@ -19,6 +19,7 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-top: 150px; /* pra não ficar atrás do placar fixo */
     }
 
     h1 {
@@ -28,14 +29,38 @@
       margin-bottom: 20px;
     }
 
+    /* Placar fixo e centralizado */
     .placar {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      color: #1a73e8;
+      font-weight: 700;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
-      justify-content: space-between;
+      gap: 40px;
       align-items: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #444;
-      margin-bottom: 25px;
+      max-width: 90vw;
+      text-align: center;
+      user-select: none;
+      z-index: 1000;
+    }
+
+    .time {
+      white-space: normal; /* permite quebra natural */
+      max-width: 140px; /* limite para forçar quebra em nomes longos */
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .placar-central {
+      font-size: 28px;
+      white-space: nowrap; /* placar não quebra */
     }
 
     .timeline {
@@ -68,16 +93,23 @@
     @media (max-width: 600px) {
       .placar {
         flex-direction: column;
-        text-align: center;
         gap: 10px;
+      }
+      .time {
+        max-width: 100%;
       }
     }
   </style>
 </head>
 <body>
+  <div class="placar" id="placar">
+    <div class="time" id="timeA">Carregando...</div>
+    <div class="placar-central" id="placarCentral">0 x 0</div>
+    <div class="time" id="timeB">Carregando...</div>
+  </div>
+
   <div class="container">
     <h1>Estatísticas do Amistoso</h1>
-    <div class="placar" id="placar">Carregando placar...</div>
     <div class="timeline" id="linhaTempo">
       <strong>Estatísticas do Jogo:</strong>
       <p>Carregando jogadas...</p>
@@ -100,7 +132,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const placarEl = document.getElementById("placar");
+    const timeAEl = document.getElementById("timeA");
+    const timeBEl = document.getElementById("timeB");
+    const placarCentralEl = document.getElementById("placarCentral");
     const linhaTempo = document.getElementById("linhaTempo");
 
     firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
@@ -113,19 +147,21 @@
       const golsB = data.golsAdversario || 0;
       const jogadas = data.jogadas || [];
 
-      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
+      timeAEl.textContent = timeA;
+      timeBEl.textContent = timeB;
+      placarCentralEl.textContent = `${golsA} x ${golsB}`;
 
       linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      jogadas.slice().reverse().forEach(j => {
-        linhaTempo.innerHTML += `
-          <p>
-            ⚽ ${j.autor}<br/>
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
-
       if (jogadas.length === 0) {
         linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+      } else {
+        jogadas.slice().reverse().forEach(j => {
+          linhaTempo.innerHTML += `
+            <p>
+              ⚽ ${j.autor}<br/>
+              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+            </p>`;
+        });
       }
     });
   </script>
