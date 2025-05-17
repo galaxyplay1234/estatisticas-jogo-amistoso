@@ -7,75 +7,77 @@
   <style>
     * {
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
     }
 
     body {
-      background: #f4f4f4;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      background: #eef1f5;
     }
 
     .container {
-      max-width: 600px;
-      margin: 30px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 850px;
+      margin: auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 10px;
+      color: #1a73e8;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .placar {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-
-    .time {
-      width: 48%;
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
       text-align: center;
     }
 
-    .time span {
-      display: block;
-      font-weight: bold;
-      font-size: 20px;
-    }
-
     .timeline {
-      margin-top: 30px;
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 6px;
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 8px;
     }
 
     .timeline strong {
       display: block;
       margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
     }
 
     .timeline p {
-      background: #e3f2fd;
-      padding: 8px;
-      border-radius: 4px;
-      margin: 5px 0;
+      margin: 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
     }
 
-    .jogadores {
-      margin-top: 20px;
+    .assistencia {
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
     }
 
-    .jogadores ul {
-      padding-left: 20px;
-    }
-
-    .jogadores li {
-      margin-bottom: 5px;
+    @media (max-width: 600px) {
+      .placar {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -83,79 +85,60 @@
   <div class="container">
     <h1>Estatísticas do Jogo</h1>
 
-    <div class="placar">
-      <div class="time">
-        <span id="nomeTimeA">Time A</span>
-        <div id="golsA">0</div>
-      </div>
-      <div class="time">
-        <span id="nomeTimeB">Time B</span>
-        <div id="golsB">0</div>
-      </div>
+    <div class="card">
+      <div class="placar" id="placar">Carregando placar...</div>
     </div>
 
-    <div class="timeline">
-      <strong>Linha do Tempo:</strong>
-      <div id="linhaTempo"></div>
-    </div>
-
-    <div class="jogadores">
-      <strong>Jogadores do Seu Time:</strong>
-      <ul id="lista-jogadores"></ul>
+    <div class="card timeline" id="linhaTempo">
+      <strong>Estatísticas do Jogo:</strong>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAPl07E20-ROibk9ps5bmxOglGV3BNfbPo",
+      apiKey: "AIzaSyDQ41bOfBXK-hIu5KrFFwRMMe5LBzLRxN8",
       authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
       projectId: "estatistica-jogo-amistoso",
       storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "929137267944",
-      appId: "1:929137267944:web:04110e9485409dbd73389c",
-      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com/"
+      messagingSenderId: "994742957937",
+      appId: "1:994742957937:web:02a46255855e325139a416",
+      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const nomeA = document.getElementById('nomeTimeA');
-    const nomeB = document.getElementById('nomeTimeB');
-    const golsA = document.getElementById('golsA');
-    const golsB = document.getElementById('golsB');
-    const linhaTempo = document.getElementById('linhaTempo');
-    const listaJogadores = document.getElementById('lista-jogadores');
+    const placarEl = document.getElementById("placar");
+    const linhaTempoEl = document.getElementById("linhaTempo");
 
-    db.ref("jogoAtual").on("value", snapshot => {
-      const data = snapshot.val();
-      if (data) {
-        nomeA.textContent = data.timeA || "Time A";
-        nomeB.textContent = data.timeB || "Time B";
-        golsA.textContent = data.golsA ?? 0;
-        golsB.textContent = data.golsB ?? 0;
+    function renderizar() {
+      db.ref("/").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
 
-        linhaTempo.innerHTML = '';
-        if (Array.isArray(data.estatisticas)) {
-          data.estatisticas.forEach(item => {
-            const p = document.createElement('p');
-            p.textContent = item;
-            linhaTempo.appendChild(p);
-          });
-        }
+        const meuTime = data.meuTime || "Meu Time";
+        const adversario = data.adversario || "Adversário";
+        const golsMeuTime = data.golsMeuTime || 0;
+        const golsAdversario = data.golsAdversario || 0;
+        const jogadas = data.jogadas || [];
 
-        listaJogadores.innerHTML = '';
-        if (Array.isArray(data.jogadores)) {
-          data.jogadores.forEach(j => {
-            const li = document.createElement('li');
-            li.textContent = j;
-            listaJogadores.appendChild(li);
-          });
-        }
-      }
-    });
+        placarEl.innerText = `${meuTime} ${golsMeuTime} x ${golsAdversario} ${adversario}`;
+
+        linhaTempoEl.innerHTML = `<strong>Estatísticas do Jogo:</strong>`;
+        [...jogadas].reverse().forEach(j => {
+          linhaTempoEl.innerHTML += `
+            <p>
+              ⚽ ${j.autor}<br />
+              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+            </p>`;
+        });
+      });
+    }
+
+    renderizar();
   </script>
 </body>
 </html>
