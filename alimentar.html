@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Cadastro de Estatísticas</title>
+  <title>Cadastro de Jogo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
@@ -11,21 +11,21 @@
 
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
       margin: 0;
       padding: 20px;
+      background: #f5f5f5;
     }
 
     .container {
       max-width: 800px;
       margin: auto;
-      background: #fff;
+      background: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    h1, h2 {
+    h1 {
       text-align: center;
       color: #007bff;
     }
@@ -40,206 +40,236 @@
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      border-radius: 5px;
+      margin-bottom: 10px;
       border: 1px solid #ccc;
+      border-radius: 5px;
     }
 
-    button {
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+    .teams {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .teams input {
+      width: 100%;
+    }
+
+    .players-list {
       margin-top: 10px;
     }
 
-    button:hover {
-      background-color: #0056b3;
+    .players-list ul {
+      list-style: none;
+      padding: 0;
     }
 
-    .time-container {
+    .players-list li {
+      background: #e9ecef;
+      padding: 5px 10px;
+      margin: 5px 0;
+      border-radius: 4px;
+    }
+
+    .placar {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
+      align-items: center;
+      margin: 20px 0;
     }
 
-    .time {
-      flex: 1 1 45%;
+    .placar .time {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
     }
 
-    .contador {
+    .placar .controle {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
+      gap: 10px;
     }
 
-    .contador button {
-      width: 40px;
-      height: 40px;
-      font-size: 18px;
+    .gol-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .jogadores-lista {
-      margin-top: 10px;
+    .timeline {
       background: #f1f1f1;
       padding: 10px;
       border-radius: 5px;
     }
 
-    .linha-tempo {
-      margin-top: 20px;
-      padding: 10px;
-      background: #e9f7ef;
-      border-left: 5px solid #28a745;
-      border-radius: 5px;
-    }
-
-    .linha-tempo p {
+    .timeline p {
       margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .link-estatisticas {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .link-estatisticas a {
-      text-decoration: none;
-      color: #007bff;
-      font-weight: bold;
+    .timeline button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
     @media (max-width: 600px) {
-      .time-container {
+      .teams {
         flex-direction: column;
       }
 
-      .time {
-        flex: 1 1 100%;
+      .placar {
+        flex-direction: column;
+      }
+
+      .placar .controle {
+        margin-top: 10px;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Cadastro de Estatísticas</h1>
+    <h1>Cadastro de Amistoso</h1>
 
-    <div class="time-container">
+    <label>Seu Time:</label>
+    <input type="text" id="meuTime" placeholder="Nome do seu time" />
+
+    <label>Time Adversário:</label>
+    <input type="text" id="adversario" placeholder="Nome do time adversário" />
+
+    <label>Adicionar Jogador ao Seu Time:</label>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="jogadorNome" placeholder="Nome do jogador" />
+      <button onclick="adicionarJogador()">Adicionar</button>
+    </div>
+
+    <div class="players-list">
+      <ul id="listaJogadores"></ul>
+    </div>
+
+    <div class="placar">
       <div class="time">
-        <label>Nome do seu time:</label>
-        <input type="text" id="meuTime" placeholder="Ex: Meu Time FC">
-        <div class="contador">
-          <span>Gols:</span>
-          <button onclick="alterarGols('meu', -1)">−</button>
+        <span id="meuTimeNome">Meu Time</span><br />
+        <div class="controle">
+          <button onclick="mudarGol(1)">+1</button>
           <span id="golsMeuTime">0</span>
-          <button onclick="alterarGols('meu', 1)">+</button>
+          <button onclick="mudarGol(-1)">-1</button>
         </div>
       </div>
-
       <div class="time">
-        <label>Nome do time adversário:</label>
-        <input type="text" id="adversario" placeholder="Ex: Adversário FC">
-        <div class="contador">
-          <span>Gols:</span>
-          <button onclick="alterarGols('adversario', -1)">−</button>
+        <span id="adversarioNome">Adversário</span><br />
+        <div class="controle">
+          <button onclick="mudarGolAdv(1)">+1</button>
           <span id="golsAdversario">0</span>
-          <button onclick="alterarGols('adversario', 1)">+</button>
+          <button onclick="mudarGolAdv(-1)">-1</button>
         </div>
       </div>
     </div>
 
-    <hr>
+    <div class="gol-form">
+      <label>Autor do Gol:</label>
+      <select id="autorGol"></select>
 
-    <h2>Jogadores do seu time</h2>
-    <input type="text" id="nomeJogador" placeholder="Nome do jogador">
-    <button onclick="adicionarJogador()">Adicionar Jogador</button>
+      <label>Assistência:</label>
+      <select id="assistenciaGol">
+        <option value="">Sem assistência</option>
+      </select>
+    </div>
 
-    <div class="jogadores-lista" id="listaJogadores"></div>
-
-    <div class="linha-tempo" id="linhaTempo"></div>
-
-    <button onclick="salvarTudo()">Salvar Estatísticas</button>
-
-    <div class="link-estatisticas">
-      <a href="estatisticas.html">→ Ver estatísticas do jogo</a>
+    <div class="timeline" id="linhaTempo">
+      <strong>Linha do Tempo:</strong>
     </div>
   </div>
 
   <script>
     let jogadores = [];
-    let jogadas = [];
     let golsMeuTime = 0;
     let golsAdversario = 0;
+    let jogadas = [];
+
+    function atualizarNomes() {
+      document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
+      document.getElementById("adversarioNome").innerText = document.getElementById("adversario").value || "Adversário";
+    }
+
+    document.getElementById("meuTime").addEventListener("input", atualizarNomes);
+    document.getElementById("adversario").addEventListener("input", atualizarNomes);
 
     function adicionarJogador() {
-      const nome = document.getElementById('nomeJogador').value.trim();
-      if (nome && !jogadores.includes(nome)) {
-        jogadores.push(nome);
-        document.getElementById('nomeJogador').value = '';
-        atualizarListaJogadores();
-      }
+      const nome = document.getElementById("jogadorNome").value.trim();
+      if (!nome) return;
+
+      jogadores.push(nome);
+      atualizarListaJogadores();
+      document.getElementById("jogadorNome").value = "";
     }
 
     function atualizarListaJogadores() {
-      const lista = document.getElementById('listaJogadores');
-      lista.innerHTML = jogadores.map(j => `• ${j}`).join('<br>');
+      const ul = document.getElementById("listaJogadores");
+      const autorSel = document.getElementById("autorGol");
+      const assistSel = document.getElementById("assistenciaGol");
+
+      ul.innerHTML = "";
+      autorSel.innerHTML = "";
+      assistSel.innerHTML = '<option value="">Sem assistência</option>';
+
+      jogadores.forEach(nome => {
+        ul.innerHTML += `<li>${nome}</li>`;
+        autorSel.innerHTML += `<option value="${nome}">${nome}</option>`;
+        assistSel.innerHTML += `<option value="${nome}">${nome}</option>`;
+      });
     }
 
-    function alterarGols(time, valor) {
-      if (time === 'meu') {
-        golsMeuTime = Math.max(0, golsMeuTime + valor);
-        document.getElementById('golsMeuTime').innerText = golsMeuTime;
-        if (valor > 0) registrarJogada();
-      } else {
-        golsAdversario = Math.max(0, golsAdversario + valor);
-        document.getElementById('golsAdversario').innerText = golsAdversario;
+    function mudarGol(valor) {
+      if (valor === 1) {
+        const autor = document.getElementById("autorGol").value;
+        const assist = document.getElementById("assistenciaGol").value;
+        if (!autor) return alert("Selecione o autor do gol!");
+
+        golsMeuTime++;
+        jogadas.push({ autor, assistencia: assist || null });
+      } else if (valor === -1 && golsMeuTime > 0) {
+        golsMeuTime--;
       }
+      atualizarPlacar();
+      atualizarLinhaTempo();
     }
 
-    function registrarJogada() {
-      if (jogadores.length === 0) {
-        alert("Adicione jogadores antes de registrar um gol.");
-        return;
+    function mudarGolAdv(valor) {
+      if (valor === 1) {
+        golsAdversario++;
+      } else if (valor === -1 && golsAdversario > 0) {
+        golsAdversario--;
       }
+      atualizarPlacar();
+    }
 
-      const autor = prompt("Quem fez o gol? (Digite o nome exatamente)");
-      if (!jogadores.includes(autor)) return alert("Nome inválido.");
+    function atualizarPlacar() {
+      document.getElementById("golsMeuTime").innerText = golsMeuTime;
+      document.getElementById("golsAdversario").innerText = golsAdversario;
+    }
 
-      const assist = prompt("Quem deu a assistência? (Deixe em branco se nenhum)");
-      if (assist && !jogadores.includes(assist)) return alert("Nome inválido.");
-
-      jogadas.push({ autor, assistencia: assist });
+    function removerUltimaJogada(index) {
+      jogadas.splice(index, 1);
       atualizarLinhaTempo();
     }
 
     function atualizarLinhaTempo() {
-      const el = document.getElementById('linhaTempo');
-      el.innerHTML = '<h3>Linha do tempo:</h3>';
+      const linha = document.getElementById("linhaTempo");
+      linha.innerHTML = "<strong>Linha do Tempo:</strong>";
       jogadas.forEach((j, i) => {
-        let txt = `⚽ ${j.autor}`;
-        if (j.assistencia) txt += ` (Assistência: ${j.assistencia})`;
-        el.innerHTML += `<p>${txt}</p>`;
+        linha.innerHTML += `
+          <p>
+            ⚽ ${j.autor}${j.assistencia ? " (Assistência: " + j.assistencia + ")" : ""}
+            ${i === jogadas.length - 1 && golsMeuTime < jogadas.length ? `<button onclick="removerUltimaJogada(${i})">❌</button>` : ""}
+          </p>`;
       });
-    }
-
-    function salvarTudo() {
-      const dados = {
-        meuTime: document.getElementById('meuTime').value.trim(),
-        adversario: document.getElementById('adversario').value.trim(),
-        golsMeuTime,
-        golsAdversario,
-        jogadores,
-        jogadas
-      };
-
-      if (!dados.meuTime || !dados.adversario) {
-        alert("Preencha os nomes dos times.");
-        return;
-      }
-
-      localStorage.setItem('dadosJogo', JSON.stringify(dados));
-      alert("Dados salvos com sucesso!");
     }
   </script>
 </body>
