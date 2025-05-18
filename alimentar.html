@@ -370,20 +370,26 @@
     }
 
     function mudarGol(valor) {
-      if (valor === 1) {
-        const autor = document.getElementById("autorGol").value;
-        const assist = document.getElementById("assistenciaGol").value;
-        if (!autor) return alert("Selecione o autor do gol!");
-        golsMeuTime++;
-        jogadas.push({ autor, assistencia: assist || null });
-      } else if (valor === -1 && golsMeuTime > 0) {
-        golsMeuTime--;
-        jogadas.pop();
-      }
-      atualizarPlacar();
-      atualizarLinhaTempo();
-      syncFirebase();
-    }
+  if (valor === 1) {
+    const autor = document.getElementById("autorGol").value;
+    const assist = document.getElementById("assistenciaGol").value;
+    if (!autor) return alert("Selecione o autor do gol!");
+
+    // Captura o tempo do jogo no formato mm:ss
+    let minutos = Math.floor(tempoSegundos / 60);
+    let segundos = tempoSegundos % 60;
+    let tempoGol = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+
+    golsMeuTime++;
+    jogadas.push({ autor, assistencia: assist || null, tempo: tempoGol });
+  } else if (valor === -1 && golsMeuTime > 0) {
+    golsMeuTime--;
+    jogadas.pop();
+  }
+  atualizarPlacar();
+  atualizarLinhaTempo();
+  syncFirebase();
+}
 
     function mudarGolAdv(valor) {
       if (valor === 1) {
@@ -401,16 +407,16 @@
     }
 
     function atualizarLinhaTempo() {
-      const linha = document.getElementById("linhaTempo");
-      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      [...jogadas].reverse().forEach(j => {
-        linha.innerHTML += `
-          <p>
-            ⚽ ${j.autor}<br />
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
-    }
+  const linha = document.getElementById("linhaTempo");
+  linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+  [...jogadas].reverse().forEach(j => {
+    linha.innerHTML += `
+      <p>
+        ⚽ ${j.autor} <span style="color:#555;font-size:0.9em;">(${j.tempo})</span><br />
+        ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+      </p>`;
+  });
+}
   </script>
 </body>
 </html>
