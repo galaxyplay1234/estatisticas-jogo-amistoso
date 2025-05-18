@@ -142,20 +142,30 @@
 }
 
 .gol-tempo {
-  font-size: 17px;
+  min-width: auto;
+  margin-right: 8px;
   font-weight: bold;
-  color: #333;
+  color: #555;
+  font-size: 0.95em;
+  white-space: nowrap;
 }
 
 .gol-detalhes {
-  flex: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.gol-detalhes span {
+  display: block;
 }
 
 .assistencia {
-  font-size: 15px;
+  font-size: 0.9em;
   color: #777;
-  margin-top: 2px;
-  margin-left: 24px;
+  margin-left: 0;
+  padding-left: 22px; /* afasta da bola e alinha com o nome */
 }
     /* Relógio e controle de tempo */
     .tempo-jogo {
