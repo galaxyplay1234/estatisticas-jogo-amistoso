@@ -141,6 +141,28 @@
       margin-top: 2px;
       margin-left: 5px;
     }
+    /* Relógio e controle de tempo */
+    .tempo-jogo {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #1a73e8;
+      letter-spacing: 2px;
+      user-select: none;
+    }
+    .botoes-tempo {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .botoes-tempo button {
+      width: 110px;
+      font-weight: 700;
+      border-radius: 8px;
+      font-size: 16px;
+    }
     @media (max-width: 600px) {
       .teams {
         flex-direction: column;
@@ -152,12 +174,27 @@
       .controle {
         margin-top: 10px;
       }
+      .botoes-tempo {
+        flex-direction: column;
+      }
+      .botoes-tempo button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Cadastro do Jogo</h1>
+
+    <!-- Relógio do jogo -->
+    <div class="tempo-jogo" id="tempoJogo">00:00</div>
+    <div class="botoes-tempo">
+      <button id="btnIniciar">Iniciar</button>
+      <button id="btnPausar" disabled>Pausar</button>
+      <button id="btnFinalizar">Finalizar</button>
+    </div>
 
     <label>Seu Time:</label>
     <input type="text" id="meuTime" placeholder="Nome do seu time" />
@@ -214,22 +251,64 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-    apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
-    authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
-    databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
-    projectId: "estatistica-jogo-amistoso",
-    storageBucket: "estatistica-jogo-amistoso.appspot.com",
-    messagingSenderId: "719635751250",
-    appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const ref = db.ref("jogoAmistoso");
+      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
+      authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
+      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
+      projectId: "estatistica-jogo-amistoso",
+      storageBucket: "estatistica-jogo-amistoso.appspot.com",
+      messagingSenderId: "719635751250",
+      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const ref = db.ref("jogoAmistoso");
 
     let jogadores = [];
     let golsMeuTime = 0;
     let golsAdversario = 0;
     let jogadas = [];
+
+    // Tempo do jogo
+    let tempoSegundos = 0;
+    let intervaloTempo = null;
+    const tempoJogoEl = document.getElementById("tempoJogo");
+    const btnIniciar = document.getElementById("btnIniciar");
+    const btnPausar = document.getElementById("btnPausar");
+    const btnFinalizar = document.getElementById("btnFinalizar");
+
+    function atualizarTempo() {
+      tempoSegundos++;
+      let minutos = Math.floor(tempoSegundos / 60);
+      let segundos = tempoSegundos % 60;
+      tempoJogoEl.textContent = `${String(minutos).padStart(2,'0')}:${String(segundos).padStart(2,'0')}`;
+      syncFirebase();
+    }
+
+    btnIniciar.addEventListener("click", () => {
+      if(intervaloTempo) return; // já rodando
+      intervaloTempo = setInterval(atualizarTempo, 1000);
+      btnIniciar.disabled = true;
+      btnPausar.disabled = false;
+    });
+
+    btnPausar.addEventListener("click", () => {
+      clearInterval(intervaloTempo);
+      intervaloTempo = null;
+      btnIniciar.disabled = false;
+      btnPausar.disabled = true;
+    });
+
+    btnFinalizar.addEventListener("click", () => {
+      if(intervaloTempo) {
+        clearInterval(intervaloTempo);
+        intervaloTempo = null;
+      }
+      btnIniciar.disabled = true;
+      btnPausar.disabled = true;
+      btnFinalizar.disabled = true;
+      alert("Jogo finalizado!");
+      // Aqui poderia adicionar envio final para Firebase se quiser
+    });
 
     function syncFirebase() {
       ref.set({
@@ -238,7 +317,8 @@
         jogadores,
         golsMeuTime,
         golsAdversario,
-        jogadas
+        jogadas,
+        tempoSegundos
       });
     }
 
