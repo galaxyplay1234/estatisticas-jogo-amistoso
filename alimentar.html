@@ -135,11 +135,27 @@
       border-bottom: 1px solid #ddd;
       font-size: 15px;
     }
-    .assistencia {
+    .linha-evento {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.gol-tempo {
+  min-width: 50px;
+  font-weight: bold;
+  color: #333;
+}
+
+.gol-detalhes {
+  flex: 1;
+}
+
+.assistencia {
   font-size: 0.9em;
   color: #777;
-  margin-left: 26px;
-  display: block;
+  margin-top: 2px;
+  margin-left: 22px;
 }
     /* Relógio e controle de tempo */
     .tempo-jogo {
@@ -423,10 +439,13 @@
   linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
   [...jogadas].reverse().forEach(j => {
     linha.innerHTML += `
-      <p>
-        <span class="gol-tempo">${j.tempo}</span> ⚽ ${j.autor}
-        ${j.assistencia ? `<br /><span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-      </p>`;
+      <div class="linha-evento">
+        <span class="gol-tempo"><strong>${j.tempo}</strong></span>
+        <div class="gol-detalhes">
+          ⚽ ${j.autor}
+          ${j.assistencia ? `<div class="assistencia">Assistência: ${j.assistencia}</div>` : ""}
+        </div>
+      </div>`;
   });
 }
   </script>
