@@ -374,9 +374,14 @@
     const autor = document.getElementById("autorGol").value;
     const assist = document.getElementById("assistenciaGol").value;
     if (!autor) return alert("Selecione o autor do gol!");
+
+    // Captura o tempo do jogo no formato mm:ss
+    let minutos = Math.floor(tempoSegundos / 60);
+    let segundos = tempoSegundos % 60;
+    let tempoGol = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+
     golsMeuTime++;
-    const tempoAtual = document.getElementById("relogio")?.innerText || "00:00";
-    jogadas.push({ autor, assistencia: assist || null, tempo: tempoAtual });
+    jogadas.push({ autor, assistencia: assist || null, tempo: tempoGol });
   } else if (valor === -1 && golsMeuTime > 0) {
     golsMeuTime--;
     jogadas.pop();
