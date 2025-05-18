@@ -182,6 +182,18 @@
         margin-bottom: 10px;
       }
     }
+    .timeline p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gol-tempo {
+  font-weight: bold;
+  white-space: nowrap;
+}
+    
+    
   </style>
 </head>
 <body>
@@ -412,7 +424,7 @@
   [...jogadas].reverse().forEach(j => {
     linha.innerHTML += `
       <p>
-        <strong>${j.tempo}</strong> ⚽ ${j.autor}
+        <span class="gol-tempo">${j.tempo}</span> ⚽ ${j.autor}
         ${j.assistencia ? `<br /><span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
       </p>`;
   });
