@@ -412,7 +412,8 @@
   [...jogadas].reverse().forEach(j => {
     linha.innerHTML += `
       <p>
-        <strong>${j.tempo}</strong> ⚽ ${j.autor}${j.assistencia ? `<br /><span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+        <strong>${j.tempo}</strong> ⚽ ${j.autor}
+        ${j.assistencia ? `<br /><span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
       </p>`;
   });
 }
