@@ -116,46 +116,70 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
-      authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
-      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
-      projectId: "estatistica-jogo-amistoso",
-      storageBucket: "estatistica-jogo-amistoso.appspot.com",
-      messagingSenderId: "719635751250",
-      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  const firebaseConfig = {
+    apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
+    authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
+    databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
+    projectId: "estatistica-jogo-amistoso",
+    storageBucket: "estatistica-jogo-amistoso.appspot.com",
+    messagingSenderId: "719635751250",
+    appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
+  };
 
-    const placarEl = document.getElementById("placar");
-    const linhaTempo = document.getElementById("linhaTempo");
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+  const placarEl = document.getElementById("placar");
+  const linhaTempo = document.getElementById("linhaTempo");
+  const relogioEl = document.getElementById("relogio");
+  const finalizadoEl = document.getElementById("finalizado");
 
-      const timeA = data.meuTime || "Meu Time";
-      const timeB = data.adversario || "Adversário";
-      const golsA = data.golsMeuTime || 0;
-      const golsB = data.golsAdversario || 0;
-      const jogadas = data.jogadas || [];
+  let intervaloRelogio;
 
-      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
+  firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
 
-      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      jogadas.slice().reverse().forEach(j => {
-        linhaTempo.innerHTML += `
-          <p>
-            ⚽ ${j.autor}<br/>
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
+    const timeA = data.meuTime || "Meu Time";
+    const timeB = data.adversario || "Adversário";
+    const golsA = data.golsMeuTime || 0;
+    const golsB = data.golsAdversario || 0;
+    const jogadas = data.jogadas || [];
 
-      if (jogadas.length === 0) {
-        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
-      }
+    placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
+
+    linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+    jogadas.slice().reverse().forEach(j => {
+      linhaTempo.innerHTML += `
+        <p>
+          ⚽ ${j.autor}<br/>
+          ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+        </p>`;
     });
-  </script>
-</body>
-</html>
+
+    if (jogadas.length === 0) {
+      linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+    }
+
+    // Relógio sincronizado com status
+    clearInterval(intervaloRelogio);
+
+    if (data.status === "finalizado") {
+      finalizadoEl.style.display = "block";
+    } else {
+      finalizadoEl.style.display = "none";
+    }
+
+    if (data.startTime && data.status !== "finalizado") {
+      intervaloRelogio = setInterval(() => {
+        const tempoAtual = Date.now();
+        const segundos = Math.floor((tempoAtual - data.startTime) / 1000);
+        const minutos = String(Math.floor(segundos / 60)).padStart(2, "0");
+        const restoSegundos = String(segundos % 60).padStart(2, "0");
+        relogioEl.textContent = `${minutos}:${restoSegundos}`;
+      }, 1000);
+    } else {
+      relogioEl.textContent = "00:00";
+    }
+  });
+</script>
