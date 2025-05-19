@@ -172,17 +172,29 @@ if (data.status === "finalizado") {
   finalizadoEl.style.display = "none";
 }
 
-if (data.startTime) {
-  intervaloRelogio = setInterval(() => {
-    const tempoAtual = Date.now();
-    const segundos = Math.floor((tempoAtual - data.startTime) / 1000);
-    if (segundos >= 0) {
-      const minutos = String(Math.floor(segundos / 60)).padStart(2, "0");
-      const restoSegundos = String(segundos % 60).padStart(2, "0");
-      relogioEl.textContent = `${minutos}:${restoSegundos}`;
-    }
-  }, 1000);
-} else {
+const startTime = data.startTime;
+const tempoAcumulado = data.tempoAcumulado || 0;
+const status = data.status;
+
+function atualizarRelogioEstatisticas() {
+  let tempoAtual = tempoAcumulado;
+
+  if (status === "andamento" && startTime) {
+    const segundosDesdeStart = Math.floor((Date.now() - startTime) / 1000);
+    tempoAtual += segundosDesdeStart;
+  }
+
+  const minutos = Math.floor(tempoAtual / 60);
+  const segundos = tempoAtual % 60;
+  relogioEl.textContent = `${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`;
+}
+
+atualizarRelogioEstatisticas();
+
+if (status === "andamento") {
+  intervaloRelogio = setInterval(atualizarRelogioEstatisticas, 1000);
+}
+else {
   // Se startTime sumir momentaneamente, não zera o relógio, só mantém o último valor exibido
 }
   });
