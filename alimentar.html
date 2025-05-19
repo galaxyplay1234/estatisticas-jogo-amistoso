@@ -224,11 +224,12 @@
         margin-top: 10px;
       }
       .botoes-tempo {
-        flex-direction: column;
-      }
-      .botoes-tempo button {
-        width: 100%;
-        margin-bottom: 10px;
+    flex-direction: row; /* <-- manter lado a lado */
+    flex-wrap: wrap;
+  }
+  .botoes-tempo button {
+    width: auto;
+    margin-bottom: 0;
       }
     }
     .timeline p {
