@@ -354,6 +354,10 @@
   intervaloTempo = setInterval(atualizarTempo, 1000);
   btnIniciar.disabled = true;
   btnPausar.disabled = false;
+  const agora = Date.now();
+firebase.database().ref("jogoAmistoso").update({
+  startTime: agora,
+  status: "andamento"
 });
 
     btnPausar.addEventListener("click", () => {
@@ -375,6 +379,8 @@
       btnPausar.disabled = true;
       btnFinalizar.disabled = true;
       alert("Jogo finalizado!");
+      firebase.database().ref("jogoAmistoso").update({
+  status: "finalizado"
       // Aqui poderia adicionar envio final para Firebase se quiser
     });
 
