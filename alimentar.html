@@ -340,26 +340,31 @@
     const btnFinalizar = document.getElementById("btnFinalizar");
 
     function atualizarTempo() {
-      tempoSegundos++;
-      let minutos = Math.floor(tempoSegundos / 60);
-      let segundos = tempoSegundos % 60;
-      tempoJogoEl.textContent = `${String(minutos).padStart(2,'0')}:${String(segundos).padStart(2,'0')}`;
-      syncFirebase();
-    }
+  const agora = Date.now();
+  const tempoAtual = Math.floor((agora - inicioTimestamp) / 1000);
+  const totalSegundos = tempoSegundos + tempoAtual;
+  const minutos = Math.floor(totalSegundos / 60);
+  const segundos = totalSegundos % 60;
+  tempoJogoEl.textContent = `${String(minutos).padStart(2,'0')}:${String(segundos).padStart(2,'0')}`;
+}
 
     btnIniciar.addEventListener("click", () => {
-      if(intervaloTempo) return; // já rodando
-      intervaloTempo = setInterval(atualizarTempo, 1000);
-      btnIniciar.disabled = true;
-      btnPausar.disabled = false;
-    });
+  if (intervaloTempo) return;
+  inicioTimestamp = Date.now(); // agora começou
+  intervaloTempo = setInterval(atualizarTempo, 1000);
+  btnIniciar.disabled = true;
+  btnPausar.disabled = false;
+});
 
     btnPausar.addEventListener("click", () => {
-      clearInterval(intervaloTempo);
-      intervaloTempo = null;
-      btnIniciar.disabled = false;
-      btnPausar.disabled = true;
-    });
+  clearInterval(intervaloTempo);
+  intervaloTempo = null;
+  const agora = Date.now();
+  tempoSegundos += Math.floor((agora - inicioTimestamp) / 1000); // acumula o tempo
+  inicioTimestamp = null;
+  btnIniciar.disabled = false;
+  btnPausar.disabled = true;
+});
 
     btnFinalizar.addEventListener("click", () => {
       if(intervaloTempo) {
