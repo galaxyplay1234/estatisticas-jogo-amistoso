@@ -331,79 +331,144 @@
   let jogadas = [];
 
   // Tempo do jogo
-  let tempoSegundos = 0;
-  let intervaloTempo = null;
-  let inicioTimestamp = null; // armazena quando o cronômetro começou
-  const tempoJogoEl = document.getElementById("tempoJogo");
+    const tempoJogoEl = document.getElementById("tempoJogo");
   const btnIniciar = document.getElementById("btnIniciar");
   const btnPausar = document.getElementById("btnPausar");
   const btnFinalizar = document.getElementById("btnFinalizar");
 
-  function atualizarTempo() {
+  let tempoAcumulado = 0; // segundos acumulados em pausas
+  let intervalo = null;
+  let inicioTimestamp = null; // timestamp do início da contagem atual
+  let statusJogo = "parado"; // 'parado', 'andamento', 'pausado', 'finalizado'
+
+  function formatarTempo(segundos) {
+    const min = Math.floor(segundos / 60);
+    const seg = segundos % 60;
+    return `${String(min).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
+  }
+
+  function atualizarRelogio() {
+    if (inicioTimestamp === null) return;
     const agora = Date.now();
     const tempoAtual = Math.floor((agora - inicioTimestamp) / 1000);
-    const totalSegundos = tempoSegundos + tempoAtual;
-    const minutos = Math.floor(totalSegundos / 60);
-    const segundos = totalSegundos % 60;
-    tempoJogoEl.textContent = `${String(minutos).padStart(2,'0')}:${String(segundos).padStart(2,'0')}`;
+    const totalSegundos = tempoAcumulado + tempoAtual;
+    tempoJogoEl.textContent = formatarTempo(totalSegundos);
 
-    // Atualiza o tempo real no Firebase para sincronizar com a página estatísticas
-    firebase.database().ref("jogoAmistoso").update({
+    // Atualiza tempo no Firebase para sincronizar com a página de estatísticas
+    ref.update({
       tempoAtual: totalSegundos
     });
   }
 
   function iniciarRelogio() {
-  startTime = Date.now(); // marca o momento atual
+    if (statusJogo === "finalizado") return; // não inicia se já finalizou
 
-  ref.update({
-    startTime: startTime,
-    tempoAcumulado: tempoSegundos, // tempo até agora
-    status: "andamento"
-  });
+    inicioTimestamp = Date.now();
+    statusJogo = "andamento";
+    btnIniciar.disabled = true;
+    btnPausar.disabled = false;
+    btnFinalizar.disabled = false;
 
-  intervalo = setInterval(() => {
-    tempoSegundos++;
-    atualizarRelogio();
-  }, 1000);
-}
+    ref.update({
+      status: statusJogo,
+      startTime: inicioTimestamp,
+      tempoAcumulado: tempoAcumulado
+    });
+
+    intervalo = setInterval(() => {
+      atualizarRelogio();
+    }, 1000);
+  }
 
   function pausarRelogio() {
-  clearInterval(intervalo);
+    if (statusJogo !== "andamento") return;
 
-  ref.update({
-    tempoAcumulado: tempoSegundos, // tempo total até a pausa
-    status: "pausado"
-  });
-}
+    clearInterval(intervalo);
+    intervalo = null;
+    const agora = Date.now();
+    tempoAcumulado += Math.floor((agora - inicioTimestamp) / 1000);
+    inicioTimestamp = null;
+    statusJogo = "pausado";
+    btnIniciar.disabled = false;
+    btnPausar.disabled = true;
+    btnFinalizar.disabled = false;
 
-  btnFinalizar.addEventListener("click", () => {
-    if(intervaloTempo) {
-      clearInterval(intervaloTempo);
-      intervaloTempo = null;
+    ref.update({
+      status: statusJogo,
+      tempoAcumulado: tempoAcumulado
+    });
+
+    atualizarRelogio(); // mostra o tempo pausado
+  }
+
+  function finalizarJogo() {
+    clearInterval(intervalo);
+    intervalo = null;
+    if (inicioTimestamp !== null) {
+      const agora = Date.now();
+      tempoAcumulado += Math.floor((agora - inicioTimestamp) / 1000);
+      inicioTimestamp = null;
     }
+    statusJogo = "finalizado";
     btnIniciar.disabled = true;
     btnPausar.disabled = true;
     btnFinalizar.disabled = true;
-    alert("Jogo finalizado!");
 
-    // Atualiza status finalizado no Firebase
-    firebase.database().ref("jogoAmistoso").update({
-      status: "finalizado"
+    ref.update({
+      status: statusJogo,
+      tempoAcumulado: tempoAcumulado
     });
-  });
 
-  function syncFirebase() {
-  ref.update({
-    meuTime: document.getElementById("meuTime").value,
-    adversario: document.getElementById("adversario").value,
-    jogadores,
-    golsMeuTime,
-    golsAdversario,
-    jogadas
-    // ❌ tempoSegundos removido para não sobrescrever o tempo real do relógio
+    // Exibe "Jogo finalizado" abaixo do relógio
+    tempoJogoEl.textContent = formatarTempo(tempoAcumulado) + " - Jogo finalizado";
+  }
+
+  btnIniciar.addEventListener("click", iniciarRelogio);
+  btnPausar.addEventListener("click", pausarRelogio);
+  btnFinalizar.addEventListener("click", finalizarJogo);
+
+  // Inicializa o relógio ao carregar dados do Firebase para manter sincronizado
+  ref.on("value", snapshot => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    statusJogo = data.status || "parado";
+    tempoAcumulado = data.tempoAcumulado || 0;
+
+    if (statusJogo === "andamento") {
+      // se jogo está em andamento, calcular inícioTimestamp baseado no startTime
+      if (data.startTime) {
+        inicioTimestamp = data.startTime;
+        btnIniciar.disabled = true;
+        btnPausar.disabled = false;
+        btnFinalizar.disabled = false;
+        if (!intervalo) {
+          intervalo = setInterval(() => {
+            atualizarRelogio();
+          }, 1000);
+        }
+      }
+    } else {
+      // jogo pausado, parado ou finalizado
+      if (intervalo) {
+        clearInterval(intervalo);
+        intervalo = null;
+      }
+      inicioTimestamp = null;
+
+      if (statusJogo === "finalizado") {
+        tempoJogoEl.textContent = formatarTempo(tempoAcumulado) + " - Jogo finalizado";
+        btnIniciar.disabled = true;
+        btnPausar.disabled = true;
+        btnFinalizar.disabled = true;
+      } else {
+        tempoJogoEl.textContent = formatarTempo(tempoAcumulado);
+        btnIniciar.disabled = (statusJogo === "andamento");
+        btnPausar.disabled = (statusJogo !== "andamento");
+        btnFinalizar.disabled = false;
+      }
+    }
   });
-}
 
   function atualizarNomes() {
     document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
