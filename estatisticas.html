@@ -27,7 +27,6 @@
       background-color: red;
       margin-right: 8px;
       animation: piscar 1s infinite;
-      display: none;
     }
 
     @keyframes piscar {
@@ -101,7 +100,7 @@
   <div class="container">
     <h1>Estatísticas do Jogo</h1>
     <div id="relogioStatus" class="relogio-container">
-      <span class="bolinha" id="bolinha"></span>
+      <span class="bolinha" id="bolinha" style="display: none;"></span>
       <span id="relogio">00:00</span>
     </div>
     <div id="finalizado" style="text-align:center; color:red; margin-top:8px; display:none;">Jogo finalizado</div>
@@ -113,91 +112,90 @@
   </div>
 
   <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
-    authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
-    databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
-    projectId: "estatistica-jogo-amistoso",
-    storageBucket: "estatistica-jogo-amistoso.appspot.com",
-    messagingSenderId: "719635751250",
-    appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
-  };
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
+      authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
+      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
+      projectId: "estatistica-jogo-amistoso",
+      storageBucket: "estatistica-jogo-amistoso.appspot.com",
+      messagingSenderId: "719635751250",
+      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  const placarEl = document.getElementById("placar");
-  const linhaTempo = document.getElementById("linhaTempo");
-  const relogioEl = document.getElementById("relogio");
-  const finalizadoEl = document.getElementById("finalizado");
-  const bolinhaEl = document.getElementById("bolinha");
+    const placarEl = document.getElementById("placar");
+    const linhaTempo = document.getElementById("linhaTempo");
+    const relogioEl = document.getElementById("relogio");
+    const finalizadoEl = document.getElementById("finalizado");
+    const bolinhaEl = document.getElementById("bolinha");
 
-  let intervaloRelogio = null;
+    let intervaloRelogio = null;
 
-  function formatarTempo(segundos) {
-    const minutos = Math.floor(segundos / 60);
-    const seg = segundos % 60;
-    return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
-  }
-
-  firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-
-    const timeA = data.meuTime || "Meu Time";
-    const timeB = data.adversario || "Adversário";
-    const golsA = data.golsMeuTime || 0;
-    const golsB = data.golsAdversario || 0;
-    const jogadas = data.jogadas || [];
-
-    // Placar
-    placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
-
-    // Linha do tempo
-    linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-    if (jogadas.length > 0) {
-      jogadas.slice().reverse().forEach(j => {
-        linhaTempo.innerHTML += `
-          <p>
-            ⚽ ${j.autor}<br/>
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
-    } else {
-      linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+    function formatarTempo(segundos) {
+      const minutos = Math.floor(segundos / 60);
+      const seg = segundos % 60;
+      return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
     }
 
-    // Relógio
-    clearInterval(intervaloRelogio);
-    const status = data.status;
-    const tempoAtual = data.tempoAtual || 0;
-    const startTime = data.startTime;
+    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
 
-    if (status === "finalizado") {
-      finalizadoEl.style.display = "block";
-      relogioEl.textContent = formatarTempo(tempoAtual);
-      bolinhaEl.style.display = "none";
-      return;
-    } else {
+      const timeA = data.meuTime || "Meu Time";
+      const timeB = data.adversario || "Adversário";
+      const golsA = data.golsMeuTime || 0;
+      const golsB = data.golsAdversario || 0;
+      const jogadas = data.jogadas || [];
+
+      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
+
+      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      if (jogadas.length > 0) {
+        jogadas.slice().reverse().forEach(j => {
+          linhaTempo.innerHTML += `
+            <p>
+              ⚽ ${j.autor}<br/>
+              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+            </p>`;
+        });
+      } else {
+        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+      }
+
+      clearInterval(intervaloRelogio);
+      intervaloRelogio = null;
+
+      const status = data.status;
+      const tempoAtual = data.tempoAtual || 0;
+      const startTime = data.startTime;
+
+      if (status === "finalizado") {
+        relogioEl.textContent = formatarTempo(tempoAtual);
+        finalizadoEl.style.display = "block";
+        bolinhaEl.style.display = "none";
+        return;
+      }
+
       finalizadoEl.style.display = "none";
-    }
 
-    if (status === "andamento" && startTime) {
-      bolinhaEl.style.display = "inline-block";
-      const inicio = Date.now();
-      intervaloRelogio = setInterval(() => {
-        const decorrido = Math.floor((Date.now() - inicio) / 1000);
-        relogioEl.textContent = formatarTempo(tempoAtual + decorrido);
-      }, 1000);
-    } else {
-      // Quando pausado ou outro estado, apenas exibe tempo parado
-      relogioEl.textContent = formatarTempo(tempoAtual);
-      bolinhaEl.style.display = "none";
-    }
-  });
-</script>
+      if (status === "andamento" && startTime) {
+        const tempoInicial = Date.now();
+        bolinhaEl.style.display = "inline-block";
+        intervaloRelogio = setInterval(() => {
+          const agora = Date.now();
+          const decorrido = Math.floor((agora - tempoInicial) / 1000);
+          relogioEl.textContent = formatarTempo(tempoAtual + decorrido);
+        }, 1000);
+      } else {
+        relogioEl.textContent = formatarTempo(tempoAtual);
+        bolinhaEl.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
