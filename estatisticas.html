@@ -61,9 +61,11 @@
     }
 
     .timeline {
-      background: #f1f1f1;
+      background: #f9f9f9;
       padding: 15px;
       border-radius: 8px;
+      max-height: 400px;
+      overflow-y: auto;
     }
 
     .timeline strong {
@@ -73,18 +75,44 @@
       color: #333;
     }
 
-    .timeline p {
-      margin: 10px 0;
-      padding-bottom: 6px;
+    .jogada {
+      margin: 8px 0;
+      padding-bottom: 8px;
       border-bottom: 1px solid #ddd;
       font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .jogada-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .autor-tempo {
+      font-weight: 600;
+      color: #1a73e8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .tempo-jogada {
+      font-size: 0.85em;
+      color: #666;
+      min-width: 50px;
+      text-align: right;
+      font-family: monospace;
     }
 
     .assistencia {
       font-size: 0.9em;
       color: #777;
-      margin-top: 2px;
-      margin-left: 5px;
+      margin-top: 4px;
+      margin-left: 2px;
     }
 
     @media (max-width: 600px) {
@@ -92,6 +120,14 @@
         flex-direction: column;
         text-align: center;
         gap: 10px;
+      }
+      .jogada {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .tempo-jogada {
+        text-align: left;
+        margin-top: 4px;
       }
     }
   </style>
@@ -158,10 +194,15 @@
       if (jogadas.length > 0) {
         jogadas.slice().reverse().forEach(j => {
           linhaTempo.innerHTML += `
-            <p>
-              ⚽ ${j.autor}<br/>
-              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-            </p>`;
+            <div class="jogada">
+              <div class="jogada-info">
+                <div class="autor-tempo">
+                  <span class="tempo-jogada">${j.tempo || "00:00"}</span>
+                  <span>${j.autor}</span>
+                </div>
+                ${j.assistencia ? `<div class="assistencia">Assistência: ${j.assistencia}</div>` : ""}
+              </div>
+            </div>`;
         });
       } else {
         linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
