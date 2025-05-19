@@ -134,67 +134,64 @@
     const finalizadoEl = document.getElementById("finalizado");
 
     let intervaloRelogio;
-    let tempoAtualExibido = 0;
 
-    function formatarTempo(segundos) {
-      const minutos = Math.floor(segundos / 60);
-      const segundosRest = segundos % 60;
-      return `${String(minutos).padStart(2, "0")}:${String(segundosRest).padStart(2, "0")}`;
-    }
+firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
 
-    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
+  const timeA = data.meuTime || "Meu Time";
+  const timeB = data.adversario || "Adversário";
+  const golsA = data.golsMeuTime || 0;
+  const golsB = data.golsAdversario || 0;
+  const jogadas = data.jogadas || [];
 
-      const timeA = data.meuTime || "Meu Time";
-      const timeB = data.adversario || "Adversário";
-      const golsA = data.golsMeuTime || 0;
-      const golsB = data.golsAdversario || 0;
-      const jogadas = data.jogadas || [];
+  placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
-      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
+  linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+  jogadas.slice().reverse().forEach(j => {
+    linhaTempo.innerHTML += `
+      <p>
+        ⚽ ${j.autor}<br/>
+        ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+      </p>`;
+  });
 
-      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      jogadas.slice().reverse().forEach(j => {
-        linhaTempo.innerHTML += `
-          <p>
-            ⚽ ${j.autor}<br/>
-            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-          </p>`;
-      });
+  if (jogadas.length === 0) {
+    linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+  }
 
-      if (jogadas.length === 0) {
-        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
-      }
+  // 🕒 Relógio
+  clearInterval(intervaloRelogio);
 
-      // Limpa intervalo anterior
-      // Limpa intervalo anterior
-clearInterval(intervaloRelogio);
+  const status = data.status;
+  const tempoAtual = data.tempoAtual || 0;
+  const startTime = data.startTime;
 
-const status = data.status;
-const tempoBase = data.tempoAtual || 0;
+  if (status === "finalizado") {
+    finalizadoEl.style.display = "block";
+    relogioEl.textContent = formatarTempo(tempoAtual);
+    return;
+  } else {
+    finalizadoEl.style.display = "none";
+  }
 
-if (status === "finalizado") {
-  finalizadoEl.style.display = "block";
-  relogioEl.textContent = formatarTempo(tempoBase);
-  return;
-} else {
-  finalizadoEl.style.display = "none";
-}
+  function formatarTempo(segundos) {
+    const minutos = Math.floor(segundos / 60);
+    const seg = segundos % 60;
+    return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
+  }
 
-// Atualiza tempo conforme status
-if (status === "andamento") {
-  const startTimestamp = Date.now();
-  intervaloRelogio = setInterval(() => {
-    const segundosPassados = Math.floor((Date.now() - startTimestamp) / 1000);
-    const tempoTotal = tempoBase + segundosPassados;
-    relogioEl.textContent = formatarTempo(tempoTotal);
-  }, 1000);
-} else {
-  // IMPORTANTE: garantir que não continue contando se estiver pausado
-  relogioEl.textContent = formatarTempo(tempoBase);
-}
-    });
+  if (status === "andamento" && startTime) {
+    const inicio = Date.now();
+    intervaloRelogio = setInterval(() => {
+      const decorrido = Math.floor((Date.now() - inicio) / 1000);
+      relogioEl.textContent = formatarTempo(tempoAtual + decorrido);
+    }, 1000);
+  } else {
+    // Quando pausado, apenas exibe o tempo atual parado
+    relogioEl.textContent = formatarTempo(tempoAtual);
+  }
+});
   </script>
 </body>
 </html>
