@@ -100,7 +100,7 @@
   <div class="container">
     <h1>Estatísticas do Jogo</h1>
     <div id="relogioStatus" class="relogio-container">
-      <span class="bolinha" id="bolinha" style="display: none;"></span>
+      <span class="bolinha" id="bolinha"></span>
       <span id="relogio">00:00</span>
     </div>
     <div id="finalizado" style="text-align:center; color:red; margin-top:8px; display:none;">Jogo finalizado</div>
@@ -132,15 +132,8 @@
     const linhaTempo = document.getElementById("linhaTempo");
     const relogioEl = document.getElementById("relogio");
     const finalizadoEl = document.getElementById("finalizado");
-    const bolinhaEl = document.getElementById("bolinha");
 
-    let intervaloRelogio = null;
-
-    function formatarTempo(segundos) {
-      const minutos = Math.floor(segundos / 60);
-      const seg = segundos % 60;
-      return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
-    }
+    let intervaloRelogio;
 
     firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
       const data = snapshot.val();
@@ -155,7 +148,9 @@
       placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
       linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-      if (jogadas.length > 0) {
+      if (jogadas.length === 0) {
+        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+      } else {
         jogadas.slice().reverse().forEach(j => {
           linhaTempo.innerHTML += `
             <p>
@@ -163,37 +158,38 @@
               ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
             </p>`;
         });
-      } else {
-        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
       }
 
       clearInterval(intervaloRelogio);
-      intervaloRelogio = null;
 
       const status = data.status;
       const tempoAtual = data.tempoAtual || 0;
       const startTime = data.startTime;
 
-      if (status === "finalizado") {
-        relogioEl.textContent = formatarTempo(tempoAtual);
-        finalizadoEl.style.display = "block";
-        bolinhaEl.style.display = "none";
-        return;
+      function formatarTempo(segundos) {
+        const minutos = Math.floor(segundos / 60);
+        const seg = segundos % 60;
+        return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
       }
 
-      finalizadoEl.style.display = "none";
+      if (status === "finalizado") {
+        finalizadoEl.style.display = "block";
+        relogioEl.textContent = formatarTempo(tempoAtual);
+        return;
+      } else {
+        finalizadoEl.style.display = "none";
+      }
 
       if (status === "andamento" && startTime) {
-        const tempoInicial = Date.now();
-        bolinhaEl.style.display = "inline-block";
+        const inicio = Date.now();
         intervaloRelogio = setInterval(() => {
-          const agora = Date.now();
-          const decorrido = Math.floor((agora - tempoInicial) / 1000);
+          const decorrido = Math.floor((Date.now() - inicio) / 1000);
           relogioEl.textContent = formatarTempo(tempoAtual + decorrido);
         }, 1000);
-      } else {
+      } else if (status === "pausado") {
         relogioEl.textContent = formatarTempo(tempoAtual);
-        bolinhaEl.style.display = "none";
+      } else {
+        relogioEl.textContent = "00:00";
       }
     });
   </script>
