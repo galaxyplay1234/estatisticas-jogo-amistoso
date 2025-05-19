@@ -11,39 +11,55 @@
       padding: 20px;
       background: #eef1f5;
     }
+
+    .relogio-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .bolinha {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: red;
+      margin-right: 8px;
+      animation: piscar 1s infinite;
+    }
+
+    @keyframes piscar {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     .container {
       max-width: 850px;
       margin: auto;
-      background: #ffffff;
+      background: #fff;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
+
     h1 {
       text-align: center;
       color: #1a73e8;
       font-size: 20px;
       margin-bottom: 20px;
     }
-    .tempo-jogo {
-      text-align: center;
-      font-size: 24px;
+
+    .placar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 20px;
       font-weight: bold;
-      margin-bottom: 10px;
-      color: #333;
+      color: #444;
+      margin-bottom: 25px;
     }
-    .piscar {
-      animation: piscar 1s infinite;
-      color: red;
-      font-size: 16px;
-      vertical-align: middle;
-      margin-left: 6px;
-    }
-    @keyframes piscar {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
+
     .timeline {
       background: #f1f1f1;
       padding: 15px;
@@ -85,27 +101,33 @@
       font-size: 0.9em;
       color: #777;
     }
-    .status-finalizado {
-      text-align: center;
-      font-size: 18px;
-      color: #e53935;
-      font-weight: bold;
-      margin-top: 10px;
-    }
+     @media (max-width: 600px) {
+      .placar {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+      }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Estatísticas do Jogo</h1>
-    <div class="tempo-jogo" id="tempoJogo">00:00 <span id="statusIcon" class="piscar">●</span></div>
-    <div class="status-finalizado" id="statusFinal"></div>
+    <div id="relogioStatus" class="relogio-container">
+      <span class="bolinha" id="bolinha" style="display: none;"></span>
+      <span id="relogio">00:00</span>
+    </div>
+    <div id="finalizado" style="text-align:center; color:red; margin-top:8px; display:none;">Jogo finalizado</div>
+    <div class="placar" id="placar">Carregando placar...</div>
     <div class="timeline" id="linhaTempo">
       <strong>Estatísticas do Jogo:</strong>
+      <p>Carregando jogadas...</p>
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
@@ -118,39 +140,34 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const ref = firebase.database().ref("jogoAmistoso");
+    const db = firebase.database();
 
-    let tempoAtual = 0;
-    let statusJogo = "aguardando";
+    const placarEl = document.getElementById("placar");
+    const linhaTempo = document.getElementById("linhaTempo");
+    const relogioEl = document.getElementById("relogio");
+    const finalizadoEl = document.getElementById("finalizado");
+    const bolinhaEl = document.getElementById("bolinha");
+
+    let intervaloRelogio = null;
 
     function formatarTempo(segundos) {
-      const min = Math.floor(segundos / 60);
+      const minutos = Math.floor(segundos / 60);
       const seg = segundos % 60;
-      return `${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}`;
+      return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
     }
 
-    ref.on("value", snapshot => {
+    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
 
-      // Atualiza relógio
-      tempoAtual = data.tempoAtual || 0;
-      document.getElementById("tempoJogo").innerHTML = `${formatarTempo(tempoAtual)} <span id="statusIcon" class="piscar">●</span>`;
+      const timeA = data.meuTime || "Meu Time";
+      const timeB = data.adversario || "Adversário";
+      const golsA = data.golsMeuTime || 0;
+      const golsB = data.golsAdversario || 0;
+      const jogadas = data.jogadas || [];
 
-      // Status
-      statusJogo = data.status || "aguardando";
-      const statusFinal = document.getElementById("statusFinal");
-      const statusIcon = document.getElementById("statusIcon");
+      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
-      if (statusJogo === "finalizado") {
-        statusFinal.innerText = "Jogo finalizado";
-        statusIcon.style.display = "none";
-      } else {
-        statusFinal.innerText = "";
-        statusIcon.style.display = "inline";
-      }
-
-      // Atualiza linha do tempo
       const jogadas = data.jogadas || [];
       const linha = document.getElementById("linhaTempo");
       linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
@@ -165,6 +182,38 @@
             </div>
           </div>`;
       });
+      } else {
+        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+      }
+
+      clearInterval(intervaloRelogio);
+      intervaloRelogio = null;
+
+      const status = data.status;
+      const tempoAtual = data.tempoAtual || 0;
+      const startTime = data.startTime;
+
+      if (status === "finalizado") {
+        relogioEl.textContent = formatarTempo(tempoAtual);
+        finalizadoEl.style.display = "block";
+        bolinhaEl.style.display = "none";
+        return;
+      }
+
+      finalizadoEl.style.display = "none";
+
+      if (status === "andamento" && startTime) {
+        const tempoInicial = Date.now();
+        bolinhaEl.style.display = "inline-block";
+        intervaloRelogio = setInterval(() => {
+          const agora = Date.now();
+          const decorrido = Math.floor((agora - tempoInicial) / 1000);
+          relogioEl.textContent = formatarTempo(tempoAtual + decorrido);
+        }, 1000);
+      } else {
+        relogioEl.textContent = formatarTempo(tempoAtual);
+        bolinhaEl.style.display = "none";
+      }
     });
   </script>
 </body>
