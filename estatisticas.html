@@ -80,10 +80,15 @@
       font-size: 15px;
     }
 
+    .tempo-jogada {
+      font-weight: bold;
+      color: #1a73e8;
+      margin-right: 6px;
+    }
+
     .assistencia {
       font-size: 0.9em;
       color: #777;
-      margin-top: 2px;
       margin-left: 5px;
     }
 
@@ -142,7 +147,7 @@
       return `${String(minutos).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
     }
 
-    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
+    db.ref("jogoAmistoso").on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
 
@@ -157,9 +162,10 @@
       linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
       if (jogadas.length > 0) {
         jogadas.slice().reverse().forEach(j => {
+          const tempoGol = j.tempo !== undefined ? `<span class="tempo-jogada">${formatarTempo(j.tempo)}</span>` : "";
           linhaTempo.innerHTML += `
             <p>
-              ⚽ ${j.autor}<br/>
+              ${tempoGol}⚽ ${j.autor}
               ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
             </p>`;
         });
