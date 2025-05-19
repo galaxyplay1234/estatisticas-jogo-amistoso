@@ -444,9 +444,7 @@
     if (!autor) return alert("Selecione o autor do gol!");
 
     // Captura o tempo do jogo no formato mm:ss
-    let minutos = Math.floor(tempoSegundos / 60);
-    let segundos = tempoSegundos % 60;
-    let tempoGol = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+    let tempoGol = tempoJogoEl.textContent;
 
     golsMeuTime++;
     jogadas.push({ autor, assistencia: assist || null, tempo: tempoGol });
