@@ -401,16 +401,16 @@
   });
 
   function syncFirebase() {
-    ref.set({
-      meuTime: document.getElementById("meuTime").value,
-      adversario: document.getElementById("adversario").value,
-      jogadores,
-      golsMeuTime,
-      golsAdversario,
-      jogadas,
-      tempoSegundos
-    });
-  }
+  ref.update({
+    meuTime: document.getElementById("meuTime").value,
+    adversario: document.getElementById("adversario").value,
+    jogadores,
+    golsMeuTime,
+    golsAdversario,
+    jogadas
+    // ❌ tempoSegundos removido para não sobrescrever o tempo real do relógio
+  });
+}
 
   function atualizarNomes() {
     document.getElementById("meuTimeNome").innerText = document.getElementById("meuTime").value || "Meu Time";
