@@ -64,50 +64,36 @@
       background: #f1f1f1;
       padding: 15px;
       border-radius: 8px;
-      margin-top: 30px;
     }
+
     .timeline strong {
       display: block;
       margin-bottom: 10px;
       font-size: 18px;
       color: #333;
     }
-    .linha-evento {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
+
+    .timeline p {
+      margin: 10px 0;
+      padding-bottom: 6px;
       border-bottom: 1px solid #ddd;
-    }
-    .gol-tempo {
-      margin-right: 8px;
-      font-weight: bold;
-      color: #555;
-      font-size: 15px;
-      white-space: nowrap;
-    }
-    .gol-detalhes {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.4;
-    }
-    .gol-detalhes span {
-      display: flex;
-      align-items: center;
       font-size: 15px;
     }
+
     .assistencia {
       font-size: 0.9em;
       color: #777;
+      margin-top: 2px;
+      margin-left: 5px;
     }
-     @media (max-width: 600px) {
+
+    @media (max-width: 600px) {
       .placar {
         flex-direction: column;
         text-align: center;
         gap: 10px;
       }
-      }
+    }
   </style>
 </head>
 <body>
@@ -168,20 +154,15 @@
 
       placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
-      const jogadas = data.jogadas || [];
-      const linha = document.getElementById("linhaTempo");
-      linha.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-
-      [...jogadas].reverse().forEach(j => {
-        linha.innerHTML += `
-          <div class="linha-evento">
-            <span class="gol-tempo"><strong>${j.tempo}</strong></span>
-            <div class="gol-detalhes">
-              ⚽ ${j.autor}
-              ${j.assistencia ? `<div class="assistencia">Assistência: ${j.assistencia}</div>` : ""}
-            </div>
-          </div>`;
-      });
+      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      if (jogadas.length > 0) {
+        jogadas.slice().reverse().forEach(j => {
+          linhaTempo.innerHTML += `
+            <p>
+              ⚽ ${j.autor}<br/>
+              ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+            </p>`;
+        });
       } else {
         linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
       }
