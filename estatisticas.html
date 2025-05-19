@@ -11,28 +11,28 @@
       padding: 20px;
       background: #eef1f5;
     }
-    
+
     .relogio-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  margin-bottom: 10px;
-}
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-.bolinha {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: red;
-  margin-right: 8px;
-  animation: piscar 1s infinite;
-}
+    .bolinha {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: red;
+      margin-right: 8px;
+      animation: piscar 1s infinite;
+    }
 
-@keyframes piscar {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
+    @keyframes piscar {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
 
     .container {
       max-width: 850px;
@@ -97,7 +97,6 @@
   </style>
 </head>
 <body>
-  <body>
   <div class="container">
     <h1>Estatísticas do Jogo</h1>
     <div id="relogioStatus" class="relogio-container">
@@ -116,86 +115,86 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
-    authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
-    databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
-    projectId: "estatistica-jogo-amistoso",
-    storageBucket: "estatistica-jogo-amistoso.appspot.com",
-    messagingSenderId: "719635751250",
-    appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDpiFjHqJSkPjgc1eEvchhpiVHJf9lgIOo",
+      authDomain: "estatistica-jogo-amistoso.firebaseapp.com",
+      databaseURL: "https://estatistica-jogo-amistoso-default-rtdb.firebaseio.com",
+      projectId: "estatistica-jogo-amistoso",
+      storageBucket: "estatistica-jogo-amistoso.appspot.com",
+      messagingSenderId: "719635751250",
+      appId: "1:719635751250:web:effa1b0c5f7a80dc745274"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  const placarEl = document.getElementById("placar");
-  const linhaTempo = document.getElementById("linhaTempo");
-  const relogioEl = document.getElementById("relogio");
-  const finalizadoEl = document.getElementById("finalizado");
+    const placarEl = document.getElementById("placar");
+    const linhaTempo = document.getElementById("linhaTempo");
+    const relogioEl = document.getElementById("relogio");
+    const finalizadoEl = document.getElementById("finalizado");
 
-  let intervaloRelogio;
+    let intervaloRelogio;
+    let tempoAtualExibido = 0;
 
-  firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-
-    const timeA = data.meuTime || "Meu Time";
-    const timeB = data.adversario || "Adversário";
-    const golsA = data.golsMeuTime || 0;
-    const golsB = data.golsAdversario || 0;
-    const jogadas = data.jogadas || [];
-
-    placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
-
-    linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
-    jogadas.slice().reverse().forEach(j => {
-      linhaTempo.innerHTML += `
-        <p>
-          ⚽ ${j.autor}<br/>
-          ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
-        </p>`;
-    });
-
-    if (jogadas.length === 0) {
-      linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+    function formatarTempo(segundos) {
+      const minutos = Math.floor(segundos / 60);
+      const segundosRest = segundos % 60;
+      return `${String(minutos).padStart(2, "0")}:${String(segundosRest).padStart(2, "0")}`;
     }
 
-    // Relógio sincronizado com status
-    clearInterval(intervaloRelogio);
+    firebase.database().ref("jogoAmistoso").on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
 
-if (data.status === "finalizado") {
-  finalizadoEl.style.display = "block";
-  relogioEl.textContent = relogioEl.textContent || "00:00"; // mantém o último valor
-  return; // para o processamento do relógio
-} else {
-  finalizadoEl.style.display = "none";
-}
+      const timeA = data.meuTime || "Meu Time";
+      const timeB = data.adversario || "Adversário";
+      const golsA = data.golsMeuTime || 0;
+      const golsB = data.golsAdversario || 0;
+      const jogadas = data.jogadas || [];
 
-const startTime = data.startTime;
-const tempoAcumulado = data.tempoAcumulado || 0;
-const status = data.status;
+      placarEl.textContent = `${timeA} ${golsA} x ${golsB} ${timeB}`;
 
-function atualizarRelogioEstatisticas() {
-  let tempoAtual = tempoAcumulado;
+      linhaTempo.innerHTML = "<strong>Estatísticas do Jogo:</strong>";
+      jogadas.slice().reverse().forEach(j => {
+        linhaTempo.innerHTML += `
+          <p>
+            ⚽ ${j.autor}<br/>
+            ${j.assistencia ? `<span class="assistencia">Assistência: ${j.assistencia}</span>` : ""}
+          </p>`;
+      });
 
-  if (status === "andamento" && startTime) {
-    const segundosDesdeStart = Math.floor((Date.now() - startTime) / 1000);
-    tempoAtual += segundosDesdeStart;
-  }
+      if (jogadas.length === 0) {
+        linhaTempo.innerHTML += `<p>Nenhuma jogada registrada ainda.</p>`;
+      }
 
-  const minutos = Math.floor(tempoAtual / 60);
-  const segundos = tempoAtual % 60;
-  relogioEl.textContent = `${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`;
-}
+      // Limpa intervalo anterior
+      clearInterval(intervaloRelogio);
 
-atualizarRelogioEstatisticas();
+      const status = data.status;
+      const tempoBase = data.tempoAtual || 0;
 
-if (status === "andamento") {
-  intervaloRelogio = setInterval(atualizarRelogioEstatisticas, 1000);
-}
-else {
-  // Se startTime sumir momentaneamente, não zera o relógio, só mantém o último valor exibido
-}
-  });
-</script>
+      if (status === "finalizado") {
+        finalizadoEl.style.display = "block";
+        relogioEl.textContent = formatarTempo(tempoBase);
+        return;
+      } else {
+        finalizadoEl.style.display = "none";
+      }
+
+      // Atualiza tempo conforme status
+      if (status === "andamento") {
+        const startTimestamp = Date.now();
+
+        intervaloRelogio = setInterval(() => {
+          const segundosPassados = Math.floor((Date.now() - startTimestamp) / 1000);
+          const tempoTotal = tempoBase + segundosPassados;
+          relogioEl.textContent = formatarTempo(tempoTotal);
+        }, 1000);
+      } else {
+        // Pausado ou aguardando — exibe tempo parado
+        relogioEl.textContent = formatarTempo(tempoBase);
+      }
+    });
+  </script>
+</body>
+</html>
