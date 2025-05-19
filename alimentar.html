@@ -372,13 +372,16 @@
     if (!intervaloTempo) return;
     clearInterval(intervaloTempo);
     intervaloTempo = null;
-    const tempoDecorrido = Math.floor((Date.now() - startTime) / 1000) + tempoAcumulado;
+    const agora = Date.now();
+    tempoSegundos += Math.floor((agora - inicioTimestamp) / 1000); // acumula o tempo
+    inicioTimestamp = null;
+    btnIniciar.disabled = false;
+    btnPausar.disabled = true;
 
-firebase.database().ref("jogoAmistoso").update({
-  status: "pausado",
-  tempoAtual: tempoDecorrido,
-  startTime: null
-});
+    // Atualiza tempo pausado no Firebase
+    firebase.database().ref("jogoAmistoso").update({
+      tempoAtual: tempoSegundos
+    });
   });
 
   btnFinalizar.addEventListener("click", () => {
