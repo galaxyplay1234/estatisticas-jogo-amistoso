@@ -203,17 +203,21 @@
   relogioEl.textContent = formatarTempo(tempoAtual);
   finalizadoEl.style.display = "block";
   bolinhaEl.style.display = "none";
-} else if (status === "andamento" && startTime) {
-  finalizadoEl.style.display = "none";
+  return;
+}
+
+finalizadoEl.style.display = "none";
+
+if (status === "andamento" && startTime) {
+  const tempoInicial = Date.now();
   bolinhaEl.style.display = "inline-block";
   intervaloRelogio = setInterval(() => {
     const agora = Date.now();
-    const decorrido = Math.floor((agora - startTime) / 1000);
+    const decorrido = Math.floor((agora - tempoInicial) / 1000);
     relogioEl.textContent = formatarTempo(tempoAtual + decorrido);
   }, 1000);
 } else {
   relogioEl.textContent = formatarTempo(tempoAtual);
-  finalizadoEl.style.display = "none";
   bolinhaEl.style.display = "none";
 }
     });
