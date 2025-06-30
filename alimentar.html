@@ -299,7 +299,7 @@
     <div class="gol-form">
       <label>Autor do Gol:</label>
       <select id="autorGol">
-      <option value="contra">Gol Contra (adversário)</option>
+      <option value="contra">Gol Contra</option>
       </select>
 
       <label>Assistência:</label>
@@ -474,7 +474,7 @@ btnZerar.addEventListener("click", () => {
     const assistSel = document.getElementById("assistenciaGol");
 
     ul.innerHTML = "";
-    autorSel.innerHTML = '<option value="contra">Gol contra</option>';
+    autorSel.innerHTML = '<option value="Gol Contra">Gol Contra</option>';
     assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
     jogadores.forEach(nome => {
