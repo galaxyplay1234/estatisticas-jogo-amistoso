@@ -254,6 +254,7 @@
     <div class="tempo-jogo" id="tempoJogo">00:00</div>
     <div class="botoes-tempo">
       <button id="btnIniciar">Iniciar</button>
+      <button id="btnPausar" disabled>Pausar</button>
       <button id="btnFinalizar">Finalizar</button>
       <div style="text-align: center; margin-top: 0px;">
       <button id="btnZerar" style="background-color: #dc3545;">Zerar Tempo</button>
@@ -370,7 +371,22 @@
     });
   });
 
-  
+  const btnPausar = document.getElementById("btnPausar");
+
+btnPausar.addEventListener("click", () => {
+  if (!intervaloTempo) return;
+  clearInterval(intervaloTempo);
+  intervaloTempo = null;
+  const agora = Date.now();
+  tempoSegundos += Math.floor((agora - inicioTimestamp) / 1000); // acumula o tempo
+  inicioTimestamp = null;
+  btnIniciar.disabled = false;
+  btnPausar.disabled = true;
+
+  firebase.database().ref("jogoAmistoso").update({
+    tempoAtual: tempoSegundos
+  });
+});
 
   btnFinalizar.addEventListener("click", () => {
     if(intervaloTempo) {
@@ -401,6 +417,7 @@ btnZerar.addEventListener("click", () => {
   tempoJogoEl.textContent = "00:00";
 
   btnIniciar.disabled = false;
+  btnPausar.disabled = true;
   btnFinalizar.disabled = false;
 
   firebase.database().ref("jogoAmistoso").update({
