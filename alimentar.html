@@ -417,7 +417,6 @@ btnZerar.addEventListener("click", () => {
   tempoJogoEl.textContent = "00:00";
 
   btnIniciar.disabled = false;
-  btnPausar.disabled = true;
   btnFinalizar.disabled = false;
 
   firebase.database().ref("jogoAmistoso").update({
