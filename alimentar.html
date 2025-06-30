@@ -474,7 +474,7 @@ btnZerar.addEventListener("click", () => {
     const assistSel = document.getElementById("assistenciaGol");
 
     ul.innerHTML = "";
-    autorSel.innerHTML = "";
+    autorSel.innerHTML = '<option value="contra">Gol contra</option>';
     assistSel.innerHTML = '<option value="">Sem assistência</option>';
 
     jogadores.forEach(nome => {
