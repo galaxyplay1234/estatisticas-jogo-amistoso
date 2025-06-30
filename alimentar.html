@@ -528,11 +528,21 @@ ref.once("value", snapshot => {
   atualizarLinhaTempo();
 
   if (data.tempoAtual) {
-    tempoSegundos = data.tempoAtual;
-    const minutos = Math.floor(tempoSegundos / 60);
-    const segundos = tempoSegundos % 60;
-    tempoJogoEl.textContent = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
-  }
+  tempoSegundos = data.tempoAtual;
+}
+
+if (data.status === "andamento") {
+  // Retomar cronômetro
+  inicioTimestamp = Date.now();
+  intervaloTempo = setInterval(atualizarTempo, 1000);
+  btnIniciar.disabled = true;
+  btnPausar.disabled = false;
+} else {
+  // Mostrar tempo pausado
+  const minutos = Math.floor(tempoSegundos / 60);
+  const segundos = tempoSegundos % 60;
+  tempoJogoEl.textContent = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+}
 });
   
   
