@@ -256,6 +256,9 @@
       <button id="btnIniciar">Iniciar</button>
       <button id="btnPausar" disabled>Pausar</button>
       <button id="btnFinalizar">Finalizar</button>
+      <div style="text-align: center; margin-top: 10px;">
+      <button id="btnZerar" style="background-color: #dc3545;">Zerar Tempo</button>
+</div>
     </div>
 
     <label>Seu Time:</label>
@@ -399,6 +402,31 @@
       status: "finalizado"
     });
   });
+  
+  
+  const btnZerar = document.getElementById("btnZerar");
+
+btnZerar.addEventListener("click", () => {
+  if (intervaloTempo) {
+    clearInterval(intervaloTempo);
+    intervaloTempo = null;
+  }
+  tempoSegundos = 0;
+  inicioTimestamp = null;
+  tempoJogoEl.textContent = "00:00";
+
+  btnIniciar.disabled = false;
+  btnPausar.disabled = true;
+  btnFinalizar.disabled = false;
+
+  firebase.database().ref("jogoAmistoso").update({
+    tempoAtual: 0,
+    startTime: null,
+    status: "zerado"
+  });
+});
+  
+  
 
   function syncFirebase() {
   ref.update({
