@@ -508,6 +508,34 @@
         </div>`;
     });
   }
+  
+  
+  // Ao carregar a página, busca os dados salvos no Firebase
+ref.once("value", snapshot => {
+  const data = snapshot.val();
+  if (!data) return;
+
+  document.getElementById("meuTime").value = data.meuTime || "";
+  document.getElementById("adversario").value = data.adversario || "";
+  golsMeuTime = data.golsMeuTime || 0;
+  golsAdversario = data.golsAdversario || 0;
+  jogadores = data.jogadores || [];
+  jogadas = data.jogadas || [];
+
+  atualizarNomes();
+  atualizarPlacar();
+  atualizarListaJogadores();
+  atualizarLinhaTempo();
+
+  if (data.tempoAtual) {
+    tempoSegundos = data.tempoAtual;
+    const minutos = Math.floor(tempoSegundos / 60);
+    const segundos = tempoSegundos % 60;
+    tempoJogoEl.textContent = `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+  }
+});
+  
+  
 </script>
 </body>
 </html>
